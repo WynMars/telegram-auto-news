@@ -2,9 +2,8 @@ name: News Bot
 
 on:
   schedule:
-    # 每小时整点跑一次。注意：GitHub Actions 的定时任务在高峰期可能延迟 5-30 分钟，
-    # 偶尔会跳过，这是平台限制。绝大多数小时仍会按时执行。
-    - cron: '0 * * * *'
+    # 每6小时跑一次（00:00, 06:00, 12:00, 18:00 UTC）。注意：GitHub Actions 的定时任务在高峰期可能延迟 5-30 分钟。
+    - cron: '0 */6 * * *'
   workflow_dispatch:  # 允许在 Actions 页面手动触发，用于测试
 
 permissions:
@@ -37,7 +36,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           MAX_ARTICLES_PER_RUN: '8'
-          LOOKBACK_HOURS: '3'
+          LOOKBACK_HOURS: '6'
           GEMINI_MODEL: 'gemini-2.5-flash'
         run: python news_bot.py
 
