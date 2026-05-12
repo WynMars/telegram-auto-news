@@ -35,9 +35,9 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          MAX_ARTICLES_PER_RUN: '8'
-          LOOKBACK_HOURS: '6'
-          GEMINI_MODEL: 'gemini-2.5-flash'
+          MAX_ARTICLES_PER_RUN: ${{ vars.MAX_ARTICLES_PER_RUN || '8' }}
+          LOOKBACK_HOURS: ${{ vars.LOOKBACK_HOURS || '6' }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-2.5-flash' }}
         run: python news_bot.py
 
       - name: Commit state
