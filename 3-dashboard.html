@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MERIDIAN · Inbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0a0908;
+  --bg-2: #131110;
+  --bg-3: #1a1816;
+  --bg-4: #211e1b;
+  --bg-5: #2a2622;
+  
+  --line: rgba(245, 239, 230, 0.06);
+  --line-strong: rgba(245, 239, 230, 0.12);
+  --line-bright: rgba(245, 239, 230, 0.24);
+  
+  --ink: #f5efe6;
+  --ink-2: #c9c2b6;
+  --ink-3: #8a8478;
+  --ink-4: #5a564f;
+  --ink-5: #3d3934;
+  
+  --signal: #e63946;
+  --amber: #e9a23b;
+  --live: #4ade80;
+  --paper: #f5efe6;
+  
+  --tag-cn: #ef4444;
+  --tag-us: #60a5fa;
+  --tag-tech: #c084fc;
+  --tag-econ: #4ade80;
+  --tag-break: #f87171;
+  
+  --serif: 'Fraunces', 'Noto Serif SC', Georgia, serif;
+  --sans: 'Geist', 'Noto Serif SC', -apple-system, system-ui, sans-serif;
+  --mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+  
+  --sidebar-w: 240px;
+  --topbar-h: 52px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  font-feature-settings: "ss01", "ss02", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
+::selection { background: var(--signal); color: var(--paper); }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--line-bright); }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* ========================================================================
+   App layout
+======================================================================== */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  height: 100vh;
+}
+
+/* ========================================================================
+   Sidebar
+======================================================================== */
+.sidebar {
+  background: var(--bg);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.brand {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: var(--topbar-h);
+  flex-shrink: 0;
+}
+.brand-logo {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+.brand-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--signal);
+  display: inline-block;
+}
+.brand-meta {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--ink-4);
+}
+
+.compose {
+  margin: 0.875rem 1rem;
+  padding: 0.625rem 0.875rem;
+  background: var(--paper);
+  color: var(--bg);
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 200ms;
+}
+.compose:hover { background: #fff; transform: translateY(-1px); }
+.compose svg { flex-shrink: 0; }
+.compose-shortcut {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  background: rgba(0,0,0,0.1);
+  padding: 1px 5px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+}
+
+.sb-section {
+  padding: 0.5rem 0;
+}
+.sb-label {
+  padding: 0.625rem 1rem 0.5rem;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sb-label-action {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+.sb-label-action:hover { color: var(--ink); }
+
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.4rem 1rem;
+  margin: 1px 0.5rem;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background 150ms;
+  position: relative;
+}
+.sb-item:hover { background: var(--bg-2); color: var(--ink); }
+.sb-item.active { 
+  background: var(--bg-3);
+  color: var(--ink); 
+  font-weight: 500;
+}
+.sb-item svg { flex-shrink: 0; opacity: 0.7; }
+.sb-item.active svg { opacity: 1; }
+.sb-count {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.05em;
+  padding: 1px 6px;
+  border-radius: 2px;
+  min-width: 22px;
+  text-align: center;
+}
+.sb-item.active .sb-count { color: var(--ink); background: var(--bg-4); }
+.sb-count.signal { color: var(--amber); }
+
+.sb-topic {
+  padding-left: 1.5rem;
+}
+.sb-topic .sb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  border-top: 1px solid var(--line);
+  padding: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c19a6b, #8b6f47);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--bg);
+  flex-shrink: 0;
+}
+.account-info {
+  min-width: 0;
+  flex: 1;
+}
+.account-name {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.account-plan {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--amber);
+  text-transform: uppercase;
+}
+.account-menu {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  color: var(--ink-3);
+}
+.account-menu:hover { background: var(--bg-3); color: var(--ink); }
+
+/* ========================================================================
+   Main column
+======================================================================== */
+.main {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-2);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Top bar */
+.topbar {
+  height: var(--topbar-h);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  padding: 0 1.25rem;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+.search {
+  flex: 1;
+  max-width: 460px;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--bg-3);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: all 150ms;
+}
+.search:focus-within {
+  border-color: var(--line-strong);
+  background: var(--bg-2);
+}
+.search svg { color: var(--ink-3); flex-shrink: 0; }
+.search input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 13px;
+}
+.search input::placeholder { color: var(--ink-3); }
+.search-shortcut {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-3);
+  background: var(--bg-4);
+  padding: 1px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+}
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.countdown-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: var(--bg-3);
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-2);
+  letter-spacing: 0.05em;
+}
+.countdown-pill .live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--live);
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+  animation: pulse 2s ease-in-out infinite;
+}
+.countdown-pill .label {
+  color: var(--ink-4);
+  text-transform: uppercase;
+}
+.countdown-pill .num { color: var(--ink); font-weight: 500; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: var(--ink-3);
+  position: relative;
+  transition: all 150ms;
+}
+.icon-btn:hover { background: var(--bg-3); color: var(--ink); }
+.icon-btn .badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--signal);
+  border: 2px solid var(--bg);
+}
+
+/* Content area */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 2rem 4rem;
+}
+@media (max-width: 768px) {
+  .content { padding: 1rem 1rem 3rem; }
+}
+
+/* Page header */
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.page-title {
+  font-family: var(--serif);
+  font-size: 2.25rem;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.page-title em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ink-2);
+}
+.page-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.05em;
+}
+.page-meta strong { color: var(--ink); font-weight: 500; }
+.page-meta .divider { width: 1px; height: 11px; background: var(--line-strong); }
+
+.signal-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 200px;
+}
+.signal-meter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+}
+.signal-meter-row strong { color: var(--ink); font-weight: 500; }
+.signal-bar {
+  height: 4px;
+  background: var(--bg-4);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.signal-bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(to right, var(--amber), var(--signal));
+  border-radius: 2px;
+  width: 4%;
+}
+
+/* ========================================================================
+   24h Timeline visualization
+======================================================================== */
+.timeline {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.timeline-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.timeline-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.timeline-title strong { color: var(--ink); }
+.timeline-legend {
+  display: flex;
+  gap: 0.875rem;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.timeline-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.timeline-legend .swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+}
+
+.timeline-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 64px;
+  position: relative;
+}
+.timeline-bar {
+  flex: 1;
+  background: var(--bg-4);
+  border-radius: 1px;
+  position: relative;
+  cursor: pointer;
+  transition: opacity 150ms;
+  min-height: 4px;
+}
+.timeline-bar:hover { opacity: 0.7; }
+.timeline-bar.now {
+  outline: 1px solid var(--ink-3);
+  outline-offset: 2px;
+}
+.timeline-bar::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  padding: 0.4rem 0.625rem;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--ink);
+  white-space: nowrap;
+  border-radius: 3px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms;
+  z-index: 10;
+}
+.timeline-bar:hover::after { opacity: 1; }
+
+.timeline-axis {
+  margin-top: 0.625rem;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--ink-4);
+  letter-spacing: 0.05em;
+}
+
+/* ========================================================================
+   Filter bar
+======================================================================== */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.filter-group {
+  display: flex;
+  gap: 1px;
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  padding: 2px;
+}
+.filter-btn {
+  padding: 0.4rem 0.75rem;
+  font-size: 12px;
+  color: var(--ink-3);
+  border-radius: 3px;
+  white-space: nowrap;
+  transition: all 150ms;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.filter-btn:hover { color: var(--ink); }
+.filter-btn.active {
+  background: var(--bg-3);
+  color: var(--ink);
+  font-weight: 500;
+}
+.filter-btn .count {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-4);
+  padding: 0 4px;
+}
+.filter-btn.active .count { color: var(--ink-3); }
+
+.sort-dropdown {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.sort-dropdown select {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  padding: 0.3rem 0.5rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* ========================================================================
+   Dispatch cards (dashboard variant - more compact)
+======================================================================== */
+.feed { display: flex; flex-direction: column; gap: 1rem; }
+
+.dispatch {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1.125rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  transition: all 200ms;
+  position: relative;
+}
+.dispatch:hover { border-color: var(--line-strong); }
+.dispatch.unread {
+  border-left: 2px solid var(--signal);
+}
+.dispatch.unread .dispatch-title { color: var(--ink); }
+.dispatch.read .dispatch-title { color: var(--ink-2); }
+.dispatch.read { opacity: 0.7; }
+.dispatch.new {
+  background: linear-gradient(to right, rgba(230, 57, 70, 0.04), transparent 30%);
+}
+
+.dispatch-row1 {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+.tag {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border: 1px solid;
+  border-radius: 2px;
+  font-weight: 500;
+}
+.tag-cn { color: var(--tag-cn); border-color: rgba(239, 68, 68, 0.35); }
+.tag-us { color: var(--tag-us); border-color: rgba(96, 165, 250, 0.35); }
+.tag-tech { color: var(--tag-tech); border-color: rgba(192, 132, 252, 0.35); }
+.tag-econ { color: var(--tag-econ); border-color: rgba(74, 222, 128, 0.35); }
+.tag-break { color: var(--tag-break); border-color: rgba(248, 113, 113, 0.35); }
+
+.confirm-pill {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--amber);
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.confirm-pill::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+.dispatch-time {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-4);
+  letter-spacing: 0.05em;
+}
+
+.dispatch-title {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.dispatch-summary {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.dispatch-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 0.25rem 0;
+}
+
+.dispatch-sig {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.dispatch-sig-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--amber);
+  flex-shrink: 0;
+  width: 60px;
+  padding-top: 2px;
+}
+.dispatch-sig-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+.dispatch-hook {
+  background: var(--bg-3);
+  border-left: 2px solid var(--amber);
+  padding: 0.75rem 0.875rem;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+.hook-content {
+  flex: 1;
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ink);
+  font-weight: 500;
+}
+.copy-btn {
+  flex-shrink: 0;
+  padding: 0.3rem 0.625rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 150ms;
+}
+.copy-btn:hover {
+  background: var(--bg-4);
+  color: var(--ink);
+  border-color: var(--line-bright);
+}
+.copy-btn.copied {
+  color: var(--live);
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+.dispatch-foot {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-3);
+  letter-spacing: 0.05em;
+}
+.foot-sources {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.foot-sources .src-dot {
+  display: inline-flex;
+  gap: 2px;
+}
+.foot-sources .src-dot span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+.foot-spacer { width: 1px; height: 11px; background: var(--line-strong); }
+.foot-action {
+  margin-left: auto;
+  display: flex;
+  gap: 0.25rem;
+}
+.foot-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  color: var(--ink-3);
+  transition: all 150ms;
+}
+.foot-btn:hover { background: var(--bg-3); color: var(--ink); }
+.foot-btn.active { color: var(--amber); }
+
+.dispatch.read .dispatch-summary,
+.dispatch.read .dispatch-sig-text,
+.dispatch.read .hook-content { color: var(--ink-3); }
+
+/* New dispatch toast */
+.new-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--bg);
+  border: 1px solid var(--amber);
+  padding: 0.875rem 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 13px;
+  color: var(--ink);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  transform: translateY(120%);
+  transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.new-toast.show { transform: translateY(0); }
+.new-toast .live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 12px rgba(233, 162, 59, 0.8);
+}
+.new-toast strong { font-weight: 500; }
+.new-toast button {
+  margin-left: 0.5rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Mobile sidebar */
+@media (max-width: 768px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 300ms;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .menu-btn { display: flex; }
+}
+.menu-btn { display: none; }
+@media (max-width: 768px) {
+  .menu-btn {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-2);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ============================================================
+     SIDEBAR
+============================================================ -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-logo">MERIDIAN<span class="brand-dot"></span></div>
+    <span class="brand-meta">v2.4.1</span>
+  </div>
+
+  <button class="compose">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+      <path d="M8 3v10M3 8h10"/>
+    </svg>
+    新建话题
+    <span class="compose-shortcut">⌘N</span>
+  </button>
+
+  <div class="sb-section">
+    <div class="sb-label">Inbox</div>
+    <div class="sb-item active">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M2 4l6 4 6-4M2 4v8h12V4M2 4l6 4 6-4"/>
+      </svg>
+      所有调度
+      <span class="sb-count signal">23</span>
+    </div>
+    <div class="sb-item">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3 5l5 5 5-5"/>
+      </svg>
+      未读
+      <span class="sb-count">9</span>
+    </div>
+    <div class="sb-item">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3 2h8l3 3v9H3V2z M11 2v3h3"/>
+      </svg>
+      已用作素材
+      <span class="sb-count">14</span>
+    </div>
+    <div class="sb-item">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3 2v12l5-3 5 3V2z"/>
+      </svg>
+      收藏
+      <span class="sb-count">6</span>
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-label">
+      Topics
+      <span class="sb-label-action">+</span>
+    </div>
+    <div class="sb-item sb-topic">
+      <span class="sb-dot" style="background: var(--tag-cn);"></span>
+      中共 / 人权
+      <span class="sb-count">8</span>
+    </div>
+    <div class="sb-item sb-topic">
+      <span class="sb-dot" style="background: var(--tag-us);"></span>
+      美国政坛
+      <span class="sb-count">5</span>
+    </div>
+    <div class="sb-item sb-topic">
+      <span class="sb-dot" style="background: var(--tag-tech);"></span>
+      科技
+      <span class="sb-count">4</span>
+    </div>
+    <div class="sb-item sb-topic">
+      <span class="sb-dot" style="background: var(--tag-econ);"></span>
+      经济
+      <span class="sb-count">3</span>
+    </div>
+    <div class="sb-item sb-topic">
+      <span class="sb-dot" style="background: var(--tag-break);"></span>
+      全球突发
+      <span class="sb-count">3</span>
+    </div>
+    <div class="sb-item sb-topic" style="color: var(--ink-3);">
+      <span class="sb-dot" style="background: var(--ink-4);"></span>
+      Adani 调查
+      <span class="sb-count">—</span>
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-label">Workspace</div>
+    <div class="sb-item">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="8" cy="8" r="2"/>
+        <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5L13 13M3 13l1.5-1.5M11.5 4.5L13 3"/>
+      </svg>
+      信源管理
+    </div>
+    <div class="sb-item">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M2 2h12v12H2z M5 5h6M5 8h6M5 11h4"/>
+      </svg>
+      归档
+    </div>
+    <div class="sb-item">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3 8a5 5 0 0110 0M3 8h10M5 11h6M7 13h2"/>
+      </svg>
+      推送渠道
+    </div>
+    <div class="sb-item">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="8" cy="8" r="6"/>
+        <circle cx="8" cy="8" r="2"/>
+      </svg>
+      设置
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="avatar">Z</div>
+    <div class="account-info">
+      <div class="account-name">Zack Wang</div>
+      <div class="account-plan">CREATOR PLAN</div>
+    </div>
+    <button class="account-menu">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+        <circle cx="3" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="13" cy="8" r="1.3"/>
+      </svg>
+    </button>
+  </div>
+</aside>
+
+<!-- ============================================================
+     MAIN
+============================================================ -->
+<main class="main">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <button class="menu-btn" id="menu-btn">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M2 4h12M2 8h12M2 12h12"/>
+      </svg>
+    </button>
+    <div class="search">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="7" cy="7" r="5"/>
+        <path d="M11 11l3 3"/>
+      </svg>
+      <input placeholder="搜索调度、信源、关键词…" />
+      <span class="search-shortcut">⌘K</span>
+    </div>
+    <div class="topbar-right">
+      <div class="countdown-pill">
+        <span class="live-dot"></span>
+        <span class="label">NEXT</span>
+        <span class="num" id="countdown">24:13</span>
+      </div>
+      <button class="icon-btn" title="Notifications">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 6a4 4 0 018 0v3l1.5 2h-11L4 9V6z M6 13a2 2 0 004 0"/>
+        </svg>
+        <span class="badge"></span>
+      </button>
+      <button class="icon-btn" title="Help">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="6"/>
+          <path d="M6 6.5a2 2 0 014 0c0 1-1 1.2-1.5 1.5L8 9 M8 11.5v.1"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Page header -->
+    <div class="page-head">
+      <div>
+        <h1 class="page-title">Inbox<em> · 今日调度</em></h1>
+        <div class="page-meta">
+          <span><strong>23</strong> dispatches</span>
+          <span class="divider"></span>
+          <span><strong>9</strong> unread</span>
+          <span class="divider"></span>
+          <span>SUNDAY · MAY 10</span>
+          <span class="divider"></span>
+          <span>SYNCED <strong>2 MIN AGO</strong></span>
+        </div>
+      </div>
+      <div class="signal-meter">
+        <div class="signal-meter-row">
+          <span>SIGNAL VS NOISE · 24H</span>
+          <span><strong>23</strong> / <span>743</span></span>
+        </div>
+        <div class="signal-bar"><div class="signal-bar-fill"></div></div>
+        <div class="signal-meter-row">
+          <span style="color: var(--ink-4);">3.1% PASSED FILTER</span>
+          <span style="color: var(--ink-4);">720 NOISE FILTERED</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 24h timeline -->
+    <div class="timeline">
+      <div class="timeline-head">
+        <div class="timeline-title">DISPATCH DENSITY · LAST 24 HOURS · <strong>23 TOTAL</strong></div>
+        <div class="timeline-legend">
+          <span><span class="swatch" style="background: var(--tag-cn);"></span>CN</span>
+          <span><span class="swatch" style="background: var(--tag-us);"></span>US</span>
+          <span><span class="swatch" style="background: var(--tag-tech);"></span>TECH</span>
+          <span><span class="swatch" style="background: var(--tag-econ);"></span>ECON</span>
+          <span><span class="swatch" style="background: var(--tag-break);"></span>BREAK</span>
+        </div>
+      </div>
+      <div class="timeline-bars" id="timeline-bars">
+        <!-- generated by JS -->
+      </div>
+      <div class="timeline-axis">
+        <span>—24H</span><span>—18H</span><span>—12H</span><span>—6H</span><span>NOW</span>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">All <span class="count">23</span></button>
+        <button class="filter-btn" data-filter="unread">Unread <span class="count">9</span></button>
+        <button class="filter-btn" data-filter="hot">🔥 Hot <span class="count">4</span></button>
+        <button class="filter-btn" data-filter="today">Today <span class="count">23</span></button>
+        <button class="filter-btn" data-filter="saved">Saved <span class="count">6</span></button>
+      </div>
+      <div class="sort-dropdown">
+        <span>SORT</span>
+        <select>
+          <option>Score · Highest</option>
+          <option>Time · Newest</option>
+          <option>Time · Oldest</option>
+          <option>Topic</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Feed -->
+    <div class="feed" id="feed">
+
+      <!-- Dispatch 1 - new + breaking -->
+      <article class="dispatch unread new" data-topic="cn break">
+        <div class="dispatch-row1">
+          <span class="tag tag-cn">中共/人权</span>
+          <span class="tag tag-break">突发</span>
+          <span class="confirm-pill">5 SOURCES CONFIRMED</span>
+          <span class="dispatch-time">2 MIN · 14:58 UTC</span>
+        </div>
+        <h3 class="dispatch-title">美国财政部对三名新疆官员实施 Magnitsky 制裁</h3>
+        <p class="dispatch-summary">美国财政部 OFAC 周五宣布对三名新疆地方官员实施全球 Magnitsky 人权制裁，冻结其在美资产并禁止入境。这是拜登政府离任前最后一批中国相关人权制裁，欧盟与英国预计跟进。</p>
+        <div class="dispatch-divider"></div>
+        <div class="dispatch-sig">
+          <div class="dispatch-sig-label">为什么<br>重要</div>
+          <div class="dispatch-sig-text">首次直接点名地市级官员，标志制裁机制下沉。对中文圈讨论"个人责任"和"跨国问责"是关键节点。</div>
+        </div>
+        <div class="dispatch-hook">
+          <div class="hook-content">"制裁名单第一次精确到了地级市 — 这意味着什么？"</div>
+          <button class="copy-btn" onclick="copyHook(this)">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M5 5V2h9v9h-3 M2 5h9v9H2z"/>
+            </svg>
+            Copy
+          </button>
+        </div>
+        <div class="dispatch-foot">
+          <span class="foot-sources">
+            <span class="src-dot"><span></span><span></span><span></span><span></span><span></span></span>
+            REUTERS · WSJ · RFA · DW · NIKKEI
+          </span>
+          <span class="foot-spacer"></span>
+          <span>SCORE 0.94</span>
+          <div class="foot-action">
+            <button class="foot-btn" title="Save"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2v12l5-3 5 3V2z"/></svg></button>
+            <button class="foot-btn" title="Mark used"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l3 3 7-7"/></svg></button>
+            <button class="foot-btn" title="Share"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><path d="M5.5 7l5-2M5.5 9l5 2"/></svg></button>
+            <button class="foot-btn" title="Open original"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h5v5M14 2L7 9M3 4h3 M3 4v9h9v-3"/></svg></button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Dispatch 2 - US politics -->
+      <article class="dispatch unread" data-topic="us">
+        <div class="dispatch-row1">
+          <span class="tag tag-us">美国政坛</span>
+          <span class="confirm-pill">3 SOURCES CONFIRMED</span>
+          <span class="dispatch-time">11 MIN · 14:47 UTC</span>
+        </div>
+        <h3 class="dispatch-title">最高法院 6-3 裁定扩大总统在国家安全事务上的行政豁免</h3>
+        <p class="dispatch-summary">SCOTUS 在 Trump v. United States 续案中以 6-3 支持总统在国家安全决策上拥有"推定豁免权"，自由派三位大法官联名异议。判决对未来政府权力边界影响深远。</p>
+        <div class="dispatch-divider"></div>
+        <div class="dispatch-sig">
+          <div class="dispatch-sig-label">为什么<br>重要</div>
+          <div class="dispatch-sig-text">重塑了"行政权 vs 司法审查"的宪法平衡。未来任何总统的对外行动几乎都将享有事实豁免，对中国议题的对抗性政策影响最大。</div>
+        </div>
+        <div class="dispatch-hook">
+          <div class="hook-content">"这不只是给特朗普的礼物 — 是给所有未来美国总统的。"</div>
+          <button class="copy-btn" onclick="copyHook(this)">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5V2h9v9h-3 M2 5h9v9H2z"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="dispatch-foot">
+          <span class="foot-sources">
+            <span class="src-dot"><span></span><span></span><span></span></span>
+            NYT · POLITICO · SCOTUSBLOG
+          </span>
+          <span class="foot-spacer"></span>
+          <span>SCORE 0.89</span>
+          <div class="foot-action">
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2v12l5-3 5 3V2z"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l3 3 7-7"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><path d="M5.5 7l5-2M5.5 9l5 2"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h5v5M14 2L7 9M3 4h3 M3 4v9h9v-3"/></svg></button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Dispatch 3 - tech + econ -->
+      <article class="dispatch unread" data-topic="tech econ">
+        <div class="dispatch-row1">
+          <span class="tag tag-tech">科技</span>
+          <span class="tag tag-econ">经济</span>
+          <span class="confirm-pill">3 SOURCES CONFIRMED</span>
+          <span class="dispatch-time">23 MIN · 14:35 UTC</span>
+        </div>
+        <h3 class="dispatch-title">NVIDIA H300 发布并明确禁运中国大陆，股价盘后跌 4.2%</h3>
+        <p class="dispatch-summary">NVIDIA 在 GTC 大会发布 H300 数据中心 GPU，性能较 H100 提升 3 倍。但同时声明因美国出口管制升级，H300 全系（含降配版）均不向中国大陆出口。</p>
+        <div class="dispatch-divider"></div>
+        <div class="dispatch-sig">
+          <div class="dispatch-sig-label">为什么<br>重要</div>
+          <div class="dispatch-sig-text">"降配特供"路线被堵死，意味着中国 AI 公司失去最后一条合法获取顶级算力的通道。华为昇腾的市场窗口骤然打开。</div>
+        </div>
+        <div class="dispatch-hook">
+          <div class="hook-content">"NVIDIA 关上的不是一扇门，是给华为递的一个机会。"</div>
+          <button class="copy-btn" onclick="copyHook(this)">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5V2h9v9h-3 M2 5h9v9H2z"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="dispatch-foot">
+          <span class="foot-sources">
+            <span class="src-dot"><span></span><span></span><span></span></span>
+            BLOOMBERG · FT · NIKKEI
+          </span>
+          <span class="foot-spacer"></span>
+          <span>SCORE 0.86</span>
+          <div class="foot-action">
+            <button class="foot-btn active"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2v12l5-3 5 3V2z"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l3 3 7-7"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><path d="M5.5 7l5-2M5.5 9l5 2"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h5v5M14 2L7 9M3 4h3 M3 4v9h9v-3"/></svg></button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Dispatch 4 - HK -->
+      <article class="dispatch unread" data-topic="cn">
+        <div class="dispatch-row1">
+          <span class="tag tag-cn">中共/人权</span>
+          <span class="dispatch-time">42 MIN · 14:16 UTC</span>
+        </div>
+        <h3 class="dispatch-title">香港国安法新案宣判，三名民主派人士被判 8 年</h3>
+        <p class="dispatch-summary">香港高等法院裁定三名前区议员"煽动罪"成立，判处 8 年监禁。辩方表示将上诉。这是该罪名下迄今最重的一起判决。</p>
+        <div class="dispatch-divider"></div>
+        <div class="dispatch-sig">
+          <div class="dispatch-sig-label">为什么<br>重要</div>
+          <div class="dispatch-sig-text">"煽动罪"被首次判超过 5 年，刷新国安法量刑天花板。同案被告中包括知名律师，引发国际人权机构强烈反应。</div>
+        </div>
+        <div class="dispatch-hook">
+          <div class="hook-content">"国安法的天花板今天又抬高了 — 8 年起步成了新基准。"</div>
+          <button class="copy-btn" onclick="copyHook(this)">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5V2h9v9h-3 M2 5h9v9H2z"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="dispatch-foot">
+          <span class="foot-sources">
+            <span class="src-dot"><span></span><span></span></span>
+            RFA · BBC 中文
+          </span>
+          <span class="foot-spacer"></span>
+          <span>SCORE 0.78</span>
+          <div class="foot-action">
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2v12l5-3 5 3V2z"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l3 3 7-7"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><path d="M5.5 7l5-2M5.5 9l5 2"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h5v5M14 2L7 9M3 4h3 M3 4v9h9v-3"/></svg></button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Dispatch 5 - econ Fed (read state) -->
+      <article class="dispatch read" data-topic="econ">
+        <div class="dispatch-row1">
+          <span class="tag tag-econ">经济</span>
+          <span class="dispatch-time">1 HR · 13:42 UTC</span>
+        </div>
+        <h3 class="dispatch-title">美联储 5 月会议纪要释放 9 月降息信号，市场反应剧烈</h3>
+        <p class="dispatch-summary">美联储发布的 5 月 FOMC 会议纪要显示多数官员认为通胀已"明确朝目标方向回落"，市场将 9 月降息概率上调至 78%。S&P500 收涨 1.4%。</p>
+        <div class="dispatch-divider"></div>
+        <div class="dispatch-sig">
+          <div class="dispatch-sig-label">为什么<br>重要</div>
+          <div class="dispatch-sig-text">距离 9 月会议还有四个月，给中美利差和人民币汇率定价提供了新锚。中文圈对房贷、留学汇款影响讨论会升温。</div>
+        </div>
+        <div class="dispatch-hook">
+          <div class="hook-content">"九月降息几乎板上钉钉，对你的留学汇款意味着什么？"</div>
+          <button class="copy-btn" onclick="copyHook(this)">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5V2h9v9h-3 M2 5h9v9H2z"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="dispatch-foot">
+          <span class="foot-sources">
+            <span class="src-dot"><span></span><span></span><span></span></span>
+            WSJ · BLOOMBERG · CNBC
+          </span>
+          <span class="foot-spacer"></span>
+          <span>SCORE 0.71</span>
+          <div class="foot-action">
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2v12l5-3 5 3V2z"/></svg></button>
+            <button class="foot-btn active"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3 8l3 3 7-7"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><path d="M5.5 7l5-2M5.5 9l5 2"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h5v5M14 2L7 9M3 4h3 M3 4v9h9v-3"/></svg></button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Dispatch 6 - TikTok -->
+      <article class="dispatch read" data-topic="us tech">
+        <div class="dispatch-row1">
+          <span class="tag tag-us">美国政坛</span>
+          <span class="tag tag-tech">科技</span>
+          <span class="dispatch-time">1 HR · 13:24 UTC</span>
+        </div>
+        <h3 class="dispatch-title">众议院通过 TikTok 强制剥离法案修订版，期限延至 270 天</h3>
+        <p class="dispatch-summary">美国众议院以 352 比 65 通过 TikTok 强制剥离修订法案，将原定 180 天剥离期延长至 270 天。法案下周送交参议院投票。字节跳动股东内部出现分歧。</p>
+        <div class="dispatch-divider"></div>
+        <div class="dispatch-sig">
+          <div class="dispatch-sig-label">为什么<br>重要</div>
+          <div class="dispatch-sig-text">延长期反映拜登政府希望避免在大选前直接关停。但参议院共和党可能反对延期，最终博弈未定。</div>
+        </div>
+        <div class="dispatch-hook">
+          <div class="hook-content">"TikTok 又多了 90 天 — 但故事远没结束。"</div>
+          <button class="copy-btn" onclick="copyHook(this)">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5V2h9v9h-3 M2 5h9v9H2z"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="dispatch-foot">
+          <span class="foot-sources">
+            <span class="src-dot"><span></span><span></span></span>
+            POLITICO · AXIOS
+          </span>
+          <span class="foot-spacer"></span>
+          <span>SCORE 0.68</span>
+          <div class="foot-action">
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2v12l5-3 5 3V2z"/></svg></button>
+            <button class="foot-btn active"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3 8l3 3 7-7"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><path d="M5.5 7l5-2M5.5 9l5 2"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h5v5M14 2L7 9M3 4h3 M3 4v9h9v-3"/></svg></button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Dispatch 7 - Russia/Ukraine -->
+      <article class="dispatch read" data-topic="break">
+        <div class="dispatch-row1">
+          <span class="tag tag-break">全球突发</span>
+          <span class="dispatch-time">2 HR · 12:48 UTC</span>
+        </div>
+        <h3 class="dispatch-title">俄乌战线乌东再现激烈交火，Pokrovsk 周边数村易手</h3>
+        <p class="dispatch-summary">俄军在顿涅茨克州 Pokrovsk 方向发动新一轮攻势，至少三座村镇易手。乌军总参谋部承认战术撤退，强调战略防线稳固。</p>
+        <div class="dispatch-divider"></div>
+        <div class="dispatch-sig">
+          <div class="dispatch-sig-label">为什么<br>重要</div>
+          <div class="dispatch-sig-text">Pokrovsk 是乌东主要后勤枢纽，一旦失守将影响整个东线补给。这是俄军今年最深一次推进。</div>
+        </div>
+        <div class="dispatch-hook">
+          <div class="hook-content">"Pokrovsk 摇摇欲坠 — 乌东的后勤命脉正在被一点点切开。"</div>
+          <button class="copy-btn" onclick="copyHook(this)">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 5V2h9v9h-3 M2 5h9v9H2z"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="dispatch-foot">
+          <span class="foot-sources">
+            <span class="src-dot"><span></span><span></span><span></span><span></span></span>
+            REUTERS · BBC · GUARDIAN · DW
+          </span>
+          <span class="foot-spacer"></span>
+          <span>SCORE 0.65</span>
+          <div class="foot-action">
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2v12l5-3 5 3V2z"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l3 3 7-7"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><path d="M5.5 7l5-2M5.5 9l5 2"/></svg></button>
+            <button class="foot-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2h5v5M14 2L7 9M3 4h3 M3 4v9h9v-3"/></svg></button>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- New dispatch toast -->
+<div class="new-toast" id="toast">
+  <span class="live-dot"></span>
+  <span><strong>3 new dispatches</strong> arrived. Refresh inbox?</span>
+  <button onclick="document.getElementById('toast').classList.remove('show')">REFRESH ↑</button>
+</div>
+
+<script>
+// ========================================================================
+// 24h Timeline bars
+// ========================================================================
+(function() {
+  const bars = document.getElementById('timeline-bars');
+  if (!bars) return;
+  const colors = ['var(--tag-cn)', 'var(--tag-us)', 'var(--tag-tech)', 'var(--tag-econ)', 'var(--tag-break)'];
+  const labels = ['中共/人权', '美国政坛', '科技', '经济', '全球突发'];
+  // Mock 24 hours of data, varying density and topic
+  const data = [0,0,1,0,0,1,2,1,0,1,2,3,1,2,1,0,2,3,2,1,2,1,2,3];
+  const topics = [0,0,3,0,0,4,1,2,0,1,0,1,3,2,4,0,1,2,1,3,0,1,4,1];
+  const max = Math.max(...data);
+  data.forEach((count, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'timeline-bar' + (i === 23 ? ' now' : '');
+    const heightPct = max > 0 ? (count / max) * 100 : 0;
+    bar.style.height = Math.max(4, heightPct) + '%';
+    bar.style.background = count > 0 ? colors[topics[i]] : 'var(--bg-4)';
+    bar.style.opacity = count > 0 ? '0.85' : '0.3';
+    const hourAgo = 23 - i;
+    bar.dataset.tooltip = `${hourAgo === 0 ? 'NOW' : hourAgo + 'H AGO'} · ${count} dispatch${count === 1 ? '' : 'es'}${count > 0 ? ' · ' + labels[topics[i]] : ''}`;
+    bars.appendChild(bar);
+  });
+})();
+
+// ========================================================================
+// Filters
+// ========================================================================
+const filterBtns = document.querySelectorAll('.filter-btn');
+const dispatches = document.querySelectorAll('.dispatch');
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    dispatches.forEach(d => {
+      let show = true;
+      if (f === 'unread') show = d.classList.contains('unread');
+      else if (f === 'hot') show = d.classList.contains('new') || d.querySelector('.confirm-pill');
+      else if (f === 'saved') show = d.querySelector('.foot-btn.active');
+      d.style.display = show ? '' : 'none';
+    });
+  });
+});
+
+// ========================================================================
+// Sidebar topic items also filter
+// ========================================================================
+document.querySelectorAll('.sb-topic').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.sb-item').forEach(s => s.classList.remove('active'));
+    item.classList.add('active');
+    const text = item.textContent.trim();
+    const map = {
+      '中共 / 人权': 'cn', '美国政坛': 'us', '科技': 'tech', '经济': 'econ', '全球突发': 'break'
+    };
+    const key = Object.keys(map).find(k => text.startsWith(k));
+    const topicCode = key ? map[key] : null;
+    dispatches.forEach(d => {
+      if (!topicCode) { d.style.display = ''; return; }
+      const topics = d.dataset.topic.split(' ');
+      d.style.display = topics.includes(topicCode) ? '' : 'none';
+    });
+  });
+});
+
+// ========================================================================
+// Copy hook
+// ========================================================================
+function copyHook(btn) {
+  const text = btn.parentElement.querySelector('.hook-content').textContent;
+  if (navigator.clipboard) navigator.clipboard.writeText(text);
+  btn.classList.add('copied');
+  const orig = btn.innerHTML;
+  btn.innerHTML = `
+    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8">
+      <path d="M3 8l3 3 7-7"/>
+    </svg>
+    Copied
+  `;
+  setTimeout(() => {
+    btn.classList.remove('copied');
+    btn.innerHTML = orig;
+  }, 1800);
+}
+
+// ========================================================================
+// Footer button toggles (save / mark used)
+// ========================================================================
+document.querySelectorAll('.foot-btn').forEach((btn, i) => {
+  if (i % 4 < 2) {  // first two are save/mark used
+    btn.addEventListener('click', () => btn.classList.toggle('active'));
+  }
+});
+
+// ========================================================================
+// Mark dispatch as read on hover (subtle interaction)
+// ========================================================================
+dispatches.forEach(d => {
+  let timer;
+  d.addEventListener('mouseenter', () => {
+    timer = setTimeout(() => {
+      if (d.classList.contains('unread')) {
+        d.classList.remove('unread');
+        d.classList.add('read');
+      }
+    }, 3000);
+  });
+  d.addEventListener('mouseleave', () => clearTimeout(timer));
+});
+
+// ========================================================================
+// Countdown to next hour
+// ========================================================================
+function updateCountdown() {
+  const now = new Date();
+  const next = new Date(now);
+  next.setHours(now.getHours() + 1, 0, 0, 0);
+  const diff = next - now;
+  const mins = Math.floor(diff / 60000);
+  const secs = Math.floor((diff % 60000) / 1000);
+  const el = document.getElementById('countdown');
+  if (el) el.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ========================================================================
+// New dispatch toast (demo)
+// ========================================================================
+setTimeout(() => {
+  document.getElementById('toast').classList.add('show');
+  setTimeout(() => document.getElementById('toast').classList.remove('show'), 8000);
+}, 4500);
+
+// ========================================================================
+// Mobile sidebar
+// ========================================================================
+document.getElementById('menu-btn')?.addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+// ========================================================================
+// Keyboard shortcuts
+// ========================================================================
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    document.querySelector('.search input')?.focus();
+  }
+});
+</script>
+</body>
+</html>

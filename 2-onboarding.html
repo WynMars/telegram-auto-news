@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MERIDIAN · 60 秒完成设置</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0a0908;
+  --bg-2: #131110;
+  --bg-3: #1a1816;
+  --bg-4: #211e1b;
+  --bg-5: #2a2622;
+  
+  --line: rgba(245, 239, 230, 0.08);
+  --line-strong: rgba(245, 239, 230, 0.16);
+  --line-bright: rgba(245, 239, 230, 0.32);
+  
+  --ink: #f5efe6;
+  --ink-2: #c9c2b6;
+  --ink-3: #8a8478;
+  --ink-4: #5a564f;
+  
+  --signal: #e63946;
+  --amber: #e9a23b;
+  --live: #4ade80;
+  --paper: #f5efe6;
+  
+  --tag-cn: #ef4444;
+  --tag-us: #60a5fa;
+  --tag-tech: #c084fc;
+  --tag-econ: #4ade80;
+  --tag-break: #f87171;
+  
+  --serif: 'Fraunces', 'Noto Serif SC', Georgia, serif;
+  --sans: 'Geist', 'Noto Serif SC', -apple-system, system-ui, sans-serif;
+  --mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100vh; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  font-feature-settings: "ss01", "ss02", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Subtle radial vignette + grain */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+body::after {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(233, 162, 59, 0.06), transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
+input { font-family: inherit; }
+::selection { background: var(--signal); color: var(--paper); }
+
+/* ============================================================
+   Top header with logo + progress
+============================================================ */
+.app-header {
+  border-bottom: 1px solid var(--line);
+  background: rgba(10, 9, 8, 0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.header-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.brand {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+.brand-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+
+/* Progress steps */
+.progress {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.step-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  transition: color 300ms;
+}
+.step-pill.active { color: var(--ink); }
+.step-pill.done { color: var(--amber); }
+.step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  transition: all 300ms;
+  background: var(--bg);
+}
+.step-pill.active .step-num {
+  border-color: var(--ink);
+  color: var(--bg);
+  background: var(--ink);
+  font-weight: 600;
+}
+.step-pill.done .step-num {
+  border-color: var(--amber);
+  background: var(--amber);
+  color: var(--bg);
+  font-weight: 600;
+}
+.step-line {
+  flex: 1;
+  height: 1px;
+  background: var(--line-strong);
+  position: relative;
+}
+.step-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--amber);
+  width: 0;
+  transition: width 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.step-line.done::after { width: 100%; }
+.step-label { white-space: nowrap; }
+
+.skip-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  flex-shrink: 0;
+  transition: color 200ms;
+}
+.skip-btn:hover { color: var(--ink); }
+
+@media (max-width: 768px) {
+  .step-label { display: none; }
+  .skip-btn { display: none; }
+}
+
+/* ============================================================
+   Step container
+============================================================ */
+.steps-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 6rem;
+  position: relative;
+}
+
+.step {
+  display: none;
+  animation: stepIn 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.step.current { display: block; }
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+.step-eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.step-title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+.step-title em { font-style: italic; font-weight: 300; color: var(--ink-2); }
+
+.step-sub {
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+  margin-bottom: 3rem;
+  max-width: 56ch;
+}
+
+/* ============================================================
+   STEP 1 — Personas
+============================================================ */
+.persona-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.875rem;
+  margin-bottom: 2rem;
+}
+@media (max-width: 600px) {
+  .persona-grid { grid-template-columns: 1fr; }
+}
+
+.persona {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.persona:hover {
+  border-color: var(--line-strong);
+  background: var(--bg-3);
+  transform: translateY(-2px);
+}
+.persona.selected {
+  border-color: var(--amber);
+  background: var(--bg-3);
+  box-shadow: 0 0 0 3px rgba(233, 162, 59, 0.1);
+}
+.persona.selected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  background: var(--amber);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+}
+.persona.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.persona-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.persona-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+  filter: grayscale(0.15);
+}
+.persona-name {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  flex: 1;
+}
+.persona-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+}
+
+.persona-desc {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  margin: 0;
+}
+
+.persona-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  padding-top: 0.875rem;
+  border-top: 1px dashed var(--line);
+}
+.persona-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 7px;
+  background: var(--bg-4);
+  color: var(--ink-3);
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+}
+
+.custom-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px dashed var(--line-strong);
+  border-radius: 6px;
+  width: 100%;
+  transition: all 200ms;
+}
+.custom-link:hover { color: var(--ink); border-color: var(--line-bright); background: var(--bg-2); }
+
+/* ============================================================
+   STEP 2 — Channel selection
+============================================================ */
+.channel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin-bottom: 2.5rem;
+}
+
+.channel {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 250ms;
+}
+.channel:hover { border-color: var(--line-strong); }
+.channel.expanded { border-color: var(--amber); }
+
+.channel-head {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  position: relative;
+}
+.channel-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--bg-3);
+}
+.channel-icon svg { width: 24px; height: 24px; }
+.channel.tg .channel-icon { background: linear-gradient(135deg, #229ED9, #1a7eb0); color: white; }
+.channel.ds .channel-icon { background: #5865F2; color: white; }
+.channel.fs .channel-icon { background: linear-gradient(135deg, #00d6b9, #009d8a); color: white; }
+.channel.web .channel-icon { background: var(--bg-4); color: var(--ink); border: 1px dashed var(--line-strong); }
+
+.channel-info { flex: 1; min-width: 0; }
+.channel-name {
+  font-size: 1.0625rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+.recommended-badge {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  background: var(--amber);
+  color: var(--bg);
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+.channel-desc {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+.channel-time {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.05em;
+  text-align: right;
+  flex-shrink: 0;
+}
+.channel-time strong { display: block; color: var(--ink-2); }
+
+.channel-toggle {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-3);
+  flex-shrink: 0;
+  transition: transform 300ms;
+}
+.channel.expanded .channel-toggle { transform: rotate(180deg); color: var(--amber); }
+
+.channel-body {
+  display: none;
+  padding: 0 1.5rem 1.5rem;
+  border-top: 1px solid var(--line);
+}
+.channel.expanded .channel-body { display: block; }
+
+.setup-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 1.5rem 0;
+  position: relative;
+}
+.setup-steps::before {
+  content: '';
+  position: absolute;
+  left: 13px;
+  top: 24px;
+  bottom: 24px;
+  width: 1px;
+  background: var(--line-strong);
+}
+.setup-step {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  position: relative;
+}
+.setup-step-num {
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-2);
+  flex-shrink: 0;
+  z-index: 1;
+  position: relative;
+  font-weight: 500;
+}
+.setup-step.done .setup-step-num {
+  background: var(--live);
+  border-color: var(--live);
+  color: var(--bg);
+}
+.setup-step-content {
+  flex: 1;
+  padding-top: 3px;
+}
+.setup-step-title {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--ink);
+}
+.setup-step-desc {
+  font-size: 13px;
+  color: var(--ink-3);
+  line-height: 1.55;
+  margin-bottom: 0.75rem;
+}
+
+/* Code block for command */
+.cmd-block {
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  padding: 0.625rem 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.625rem;
+}
+.cmd-text {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--amber);
+  letter-spacing: 0.02em;
+  user-select: all;
+}
+.cmd-copy {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 4px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  transition: all 150ms;
+}
+.cmd-copy:hover { color: var(--ink); border-color: var(--line-bright); }
+.cmd-copy.copied { color: var(--live); border-color: var(--live); }
+
+/* Connect button + status */
+.connect-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.btn-connect {
+  padding: 0.625rem 1.125rem;
+  background: var(--paper);
+  color: var(--bg);
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 200ms;
+}
+.btn-connect:hover { background: white; transform: translateY(-1px); }
+.btn-connect:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.connect-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+}
+.connect-status .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-4);
+}
+.connect-status.waiting .dot {
+  background: var(--amber);
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+.connect-status.connected { color: var(--live); }
+.connect-status.connected .dot {
+  background: var(--live);
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
+  animation: none;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+.advanced-link {
+  display: block;
+  margin-top: 1rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.advanced-link:hover { color: var(--ink); }
+
+/* ============================================================
+   STEP 3 — Preview + ready
+============================================================ */
+.ready-summary {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+.ready-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.ready-row:last-child { border-bottom: none; }
+.ready-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--live);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ready-content { flex: 1; }
+.ready-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 0.2rem;
+}
+.ready-value {
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.ready-edit {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  transition: all 150ms;
+}
+.ready-edit:hover { color: var(--ink); border-color: var(--line-bright); }
+
+/* Sample dispatch preview */
+.preview-frame {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+.preview-label {
+  position: absolute;
+  top: -10px;
+  left: 1.5rem;
+  background: var(--bg);
+  padding: 0 0.625rem;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+.preview-dispatch {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+.pd-row1 {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+.pd-tag {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border: 1px solid;
+  border-radius: 2px;
+  font-weight: 500;
+}
+.pd-time {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-4);
+}
+.pd-title {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+.pd-summary {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.pd-sig {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  padding-top: 0.875rem;
+  border-top: 1px dashed var(--line);
+}
+.pd-sig-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--amber);
+  flex-shrink: 0;
+  width: 56px;
+  padding-top: 2px;
+}
+.pd-sig-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  font-style: italic;
+}
+.pd-hook {
+  background: var(--bg-3);
+  border-left: 2px solid var(--amber);
+  padding: 0.75rem 0.875rem;
+  border-radius: 0 4px 4px 0;
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 500;
+}
+.pd-foot {
+  display: flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-3);
+  letter-spacing: 0.05em;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--line);
+}
+
+/* Send-test CTA */
+.test-cta {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.btn-test {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 1rem 1.5rem;
+  background: var(--paper);
+  color: var(--bg);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  transition: all 200ms;
+  position: relative;
+  overflow: hidden;
+}
+.btn-test:hover { background: white; transform: translateY(-1px); box-shadow: 0 8px 30px rgba(245, 239, 230, 0.2); }
+.btn-test:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-test.sent {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--live);
+}
+.test-or {
+  display: block;
+  margin-top: 1rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.08em;
+}
+.test-or strong { color: var(--ink-2); }
+
+/* ============================================================
+   Footer with nav buttons
+============================================================ */
+.step-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+  margin-top: 2rem;
+}
+.btn-back {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 200ms;
+}
+.btn-back:hover { color: var(--ink); }
+.btn-back:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1.5rem;
+  background: var(--paper);
+  color: var(--bg);
+  border-radius: 5px;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  transition: all 200ms;
+}
+.btn-next:hover:not(:disabled) {
+  background: white;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(245, 239, 230, 0.2);
+}
+.btn-next:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* Help hint at bottom */
+.help-hint {
+  margin-top: 3rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-4);
+  letter-spacing: 0.05em;
+}
+.help-hint a { color: var(--ink-3); }
+.help-hint a:hover { color: var(--ink); text-decoration: underline; }
+
+/* ============================================================
+   Final celebration step
+============================================================ */
+.complete {
+  display: none;
+  text-align: center;
+  padding: 4rem 0;
+  animation: stepIn 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.complete.show { display: block; }
+.check-anim {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 2rem;
+  border-radius: 50%;
+  background: rgba(74, 222, 128, 0.15);
+  border: 2px solid var(--live);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.check-anim::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border: 2px solid var(--live);
+  border-radius: 50%;
+  opacity: 0;
+  animation: ring-out 1.5s ease-out infinite;
+}
+@keyframes ring-out {
+  0% { transform: scale(0.95); opacity: 0.6; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+.check-anim svg { color: var(--live); }
+.complete h2 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+.complete h2 em { font-style: italic; font-weight: 300; color: var(--ink-2); }
+.complete p {
+  color: var(--ink-2);
+  font-size: 1.0625rem;
+  margin-bottom: 2.5rem;
+}
+.complete-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 1rem 1.75rem;
+  background: var(--paper);
+  color: var(--bg);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 200ms;
+}
+.complete-cta:hover { background: white; transform: translateY(-1px); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+============================================================ -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">MERIDIAN<span class="brand-dot"></span></div>
+    <div class="progress">
+      <div class="step-pill active" data-step="1">
+        <span class="step-num">1</span>
+        <span class="step-label">PROFILE</span>
+      </div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step-pill" data-step="2">
+        <span class="step-num">2</span>
+        <span class="step-label">CHANNEL</span>
+      </div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step-pill" data-step="3">
+        <span class="step-num">3</span>
+        <span class="step-label">PREVIEW</span>
+      </div>
+    </div>
+    <button class="skip-btn">SKIP FOR NOW →</button>
+  </div>
+</header>
+
+<!-- ============================================================
+     STEPS WRAPPER
+============================================================ -->
+<div class="steps-wrap">
+
+  <!-- ============================================================
+       STEP 1 — Pick your creator profile
+  ============================================================ -->
+  <section class="step current" data-step-content="1">
+    <div class="step-eyebrow">STEP 01 / 60 SECONDS · NO CARD REQUIRED</div>
+    <h1 class="step-title">你最像哪种创作者？<em>选一个，剩下我们配。</em></h1>
+    <p class="step-sub">
+      你不需要懂 RSS、信源、关键词配置。点一个最贴近你的方向，我们已经为每种创作者预设了最优组合 —— 信源、关键词、推送频率全部自动配好。<strong style="color: var(--ink);">5 秒之后随时改</strong>。
+    </p>
+
+    <div class="persona-grid" id="personas">
+
+      <button class="persona" data-persona="cn-watcher">
+        <div class="persona-head">
+          <span class="persona-icon">🇨🇳</span>
+          <span class="persona-name">中国观察者</span>
+          <span class="persona-meta">★ 最受欢迎</span>
+        </div>
+        <p class="persona-desc">追踪中共政局、人权议题、跨国镇压、习近平动态。覆盖 RFA / DW 中文 / CDT / Nikkei 等专业信源。</p>
+        <div class="persona-tags">
+          <span class="persona-tag">新疆</span>
+          <span class="persona-tag">香港</span>
+          <span class="persona-tag">台海</span>
+          <span class="persona-tag">维权</span>
+          <span class="persona-tag">党媒</span>
+          <span class="persona-tag">+15</span>
+        </div>
+      </button>
+
+      <button class="persona" data-persona="us-politics">
+        <div class="persona-head">
+          <span class="persona-icon">🇺🇸</span>
+          <span class="persona-name">美国政治评论员</span>
+        </div>
+        <p class="persona-desc">白宫、国会、最高法院、对华政策、大选追踪。Politico / Axios / NYT / WSJ 优先抓取。</p>
+        <div class="persona-tags">
+          <span class="persona-tag">特朗普</span>
+          <span class="persona-tag">SCOTUS</span>
+          <span class="persona-tag">国会</span>
+          <span class="persona-tag">DOJ</span>
+          <span class="persona-tag">+12</span>
+        </div>
+      </button>
+
+      <button class="persona" data-persona="tech-analyst">
+        <div class="persona-head">
+          <span class="persona-icon">🤖</span>
+          <span class="persona-name">科技分析师</span>
+        </div>
+        <p class="persona-desc">AI、半导体、平台监管、马斯克帝国、中美科技战。OpenAI、Anthropic、台积电、NVIDIA 全覆盖。</p>
+        <div class="persona-tags">
+          <span class="persona-tag">AI</span>
+          <span class="persona-tag">芯片</span>
+          <span class="persona-tag">出口管制</span>
+          <span class="persona-tag">马斯克</span>
+          <span class="persona-tag">+10</span>
+        </div>
+      </button>
+
+      <button class="persona" data-persona="econ-writer">
+        <div class="persona-head">
+          <span class="persona-icon">💰</span>
+          <span class="persona-name">财经评论员</span>
+        </div>
+        <p class="persona-desc">联储议息、关税博弈、汇率、中美脱钩、A 股 / 港股 / 美股关键事件。Bloomberg / FT / WSJ Markets。</p>
+        <div class="persona-tags">
+          <span class="persona-tag">美联储</span>
+          <span class="persona-tag">通胀</span>
+          <span class="persona-tag">关税</span>
+          <span class="persona-tag">汇率</span>
+          <span class="persona-tag">+8</span>
+        </div>
+      </button>
+
+      <button class="persona" data-persona="global-affairs">
+        <div class="persona-head">
+          <span class="persona-icon">⚡</span>
+          <span class="persona-name">全球时事评论</span>
+        </div>
+        <p class="persona-desc">俄乌、以巴、伊朗、朝鲜、台海、政变、灾害。Reuters / BBC / Al Jazeera / Guardian 实时同步。</p>
+        <div class="persona-tags">
+          <span class="persona-tag">乌克兰</span>
+          <span class="persona-tag">加沙</span>
+          <span class="persona-tag">朝鲜</span>
+          <span class="persona-tag">突发</span>
+          <span class="persona-tag">+12</span>
+        </div>
+      </button>
+
+      <button class="persona" data-persona="all-in-one">
+        <div class="persona-head">
+          <span class="persona-icon">✨</span>
+          <span class="persona-name">全部话题</span>
+        </div>
+        <p class="persona-desc">什么都想看？覆盖以上所有话题轨道。每小时 8 条精选上限，按重要性自动排序，不会刷屏。</p>
+        <div class="persona-tags">
+          <span class="persona-tag">所有 5 个话题</span>
+          <span class="persona-tag">智能去重</span>
+          <span class="persona-tag">动态打分</span>
+        </div>
+      </button>
+
+    </div>
+
+    <button class="custom-link">
+      <span>+ 我有自己的话题（自定义）</span>
+    </button>
+
+    <div class="step-foot">
+      <button class="btn-back" disabled>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3L5 8l5 5"/></svg>
+        BACK
+      </button>
+      <button class="btn-next" id="next-1" disabled>
+        继续
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       STEP 2 — Pick a delivery channel
+  ============================================================ -->
+  <section class="step" data-step-content="2">
+    <div class="step-eyebrow">STEP 02 / 推送到哪里</div>
+    <h1 class="step-title">调度发到哪里？<em>选一个就好。</em></h1>
+    <p class="step-sub">
+      推荐 Telegram —— 多数中文创作者都在用，免费、不被墙、设置最快（30 秒）。其他渠道随时可在设置里添加。
+    </p>
+
+    <div class="channel-list" id="channels">
+
+      <!-- Telegram -->
+      <div class="channel tg expanded" data-channel="telegram">
+        <div class="channel-head">
+          <div class="channel-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.05 2.93L2.4 10.13c-1.27.49-1.26 1.18-.23 1.5l4.78 1.5 11.07-6.99c.52-.32.99-.15.6.2l-8.96 8.1-.34 5.16c.5 0 .72-.23 1-.5l2.4-2.34 4.97 3.68c.92.51 1.58.25 1.81-.85L23.4 4.05c.34-1.36-.51-1.99-1.35-1.12z"/></svg>
+          </div>
+          <div class="channel-info">
+            <div class="channel-name">
+              Telegram
+              <span class="recommended-badge">RECOMMENDED</span>
+            </div>
+            <div class="channel-desc">最快设置 · 免费 · 中文创作者首选</div>
+          </div>
+          <div class="channel-time">
+            <strong>~30 SEC</strong>
+            <span>SETUP</span>
+          </div>
+          <button class="channel-toggle">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6l5 5 5-5"/></svg>
+          </button>
+        </div>
+        <div class="channel-body">
+          <div class="setup-steps">
+
+            <div class="setup-step done">
+              <div class="setup-step-num">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg>
+              </div>
+              <div class="setup-step-content">
+                <div class="setup-step-title">在 Telegram 里搜索 @MeridianBot</div>
+                <div class="setup-step-desc">点开机器人，按 START（开始）。</div>
+              </div>
+            </div>
+
+            <div class="setup-step">
+              <div class="setup-step-num">2</div>
+              <div class="setup-step-content">
+                <div class="setup-step-title">把这个连接码发给机器人</div>
+                <div class="setup-step-desc">复制下面这行命令，粘贴到机器人对话框里发送。</div>
+                <div class="cmd-block">
+                  <code class="cmd-text">/connect zack-9381</code>
+                  <button class="cmd-copy" onclick="copyCmd(this)">COPY</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="setup-step">
+              <div class="setup-step-num">3</div>
+              <div class="setup-step-content">
+                <div class="setup-step-title">点下面的按钮，等机器人确认</div>
+                <div class="setup-step-desc">我们会自动检测连接，通常只要几秒。</div>
+                <div class="connect-row">
+                  <button class="btn-connect" id="btn-connect" onclick="simulateConnect()">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8c0-3 2-5 5-5s5 2 5 5M14 8c0 3-2 5-5 5s-5-2-5-5"/></svg>
+                    检测连接
+                  </button>
+                  <div class="connect-status" id="connect-status">
+                    <span class="dot"></span>
+                    <span id="status-text">等待中…</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <a href="#" class="advanced-link">高级：粘贴你自己的 Bot Token 和 Chat ID →</a>
+        </div>
+      </div>
+
+      <!-- Discord -->
+      <div class="channel ds" data-channel="discord">
+        <div class="channel-head">
+          <div class="channel-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.27 5.33c-1.44-.66-2.97-1.15-4.57-1.43a.07.07 0 00-.07.04c-.2.36-.41.82-.56 1.17-1.7-.26-3.4-.26-5.1 0-.15-.36-.36-.81-.57-1.17a.08.08 0 00-.07-.04c-1.6.28-3.13.77-4.57 1.43a.07.07 0 00-.03.03C.83 9.7.07 13.93.45 18.11a.08.08 0 00.03.05 18.4 18.4 0 005.55 2.81.08.08 0 00.08-.03c.43-.58.81-1.2 1.13-1.85a.08.08 0 00-.04-.1 12 12 0 01-1.74-.83.07.07 0 010-.13c.12-.09.23-.18.34-.27a.08.08 0 01.07-.01c3.66 1.67 7.6 1.67 11.21 0a.07.07 0 01.08.01c.11.09.23.18.34.27a.08.08 0 01-.01.13c-.55.32-1.13.6-1.74.83a.08.08 0 00-.03.1c.32.65.7 1.27 1.12 1.85a.08.08 0 00.08.03 18.34 18.34 0 005.55-2.81.08.08 0 00.04-.05c.46-4.83-.78-9.03-3.27-12.75a.07.07 0 00-.03-.03zM8.52 15.57c-1.1 0-2-1-2-2.24 0-1.24.88-2.24 2-2.24s2.02 1 2 2.24c0 1.24-.89 2.24-2 2.24zm6.97 0c-1.1 0-2-1-2-2.24 0-1.24.88-2.24 2-2.24s2.02 1 2 2.24c0 1.24-.88 2.24-2 2.24z"/></svg>
+          </div>
+          <div class="channel-info">
+            <div class="channel-name">Discord</div>
+            <div class="channel-desc">推送到你的服务器频道 · Webhook 设置</div>
+          </div>
+          <div class="channel-time">
+            <strong>~1 MIN</strong>
+            <span>SETUP</span>
+          </div>
+          <button class="channel-toggle">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6l5 5 5-5"/></svg>
+          </button>
+        </div>
+        <div class="channel-body">
+          <div class="setup-steps">
+            <div class="setup-step">
+              <div class="setup-step-num">1</div>
+              <div class="setup-step-content">
+                <div class="setup-step-title">在 Discord 服务器中创建一个 Webhook</div>
+                <div class="setup-step-desc">服务器设置 → Integrations → Webhooks → New Webhook → Copy URL。</div>
+              </div>
+            </div>
+            <div class="setup-step">
+              <div class="setup-step-num">2</div>
+              <div class="setup-step-content">
+                <div class="setup-step-title">粘贴 Webhook URL</div>
+                <div class="cmd-block">
+                  <input class="cmd-text" style="background: none; border: none; outline: none; width: 100%; color: var(--amber);" placeholder="https://discord.com/api/webhooks/..." />
+                </div>
+                <button class="btn-connect" style="margin-top: 0.5rem;">保存连接</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feishu -->
+      <div class="channel fs" data-channel="feishu">
+        <div class="channel-head">
+          <div class="channel-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <div class="channel-info">
+            <div class="channel-name">飞书 / Lark</div>
+            <div class="channel-desc">推送到飞书群机器人 · 适合团队协作</div>
+          </div>
+          <div class="channel-time">
+            <strong>~1 MIN</strong>
+            <span>SETUP</span>
+          </div>
+          <button class="channel-toggle">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6l5 5 5-5"/></svg>
+          </button>
+        </div>
+        <div class="channel-body">
+          <div class="setup-steps">
+            <div class="setup-step">
+              <div class="setup-step-num">1</div>
+              <div class="setup-step-content">
+                <div class="setup-step-title">在飞书群里添加"自定义机器人"</div>
+                <div class="setup-step-desc">群设置 → 群机器人 → 添加机器人 → 自定义机器人 → 复制 Webhook URL。</div>
+              </div>
+            </div>
+            <div class="setup-step">
+              <div class="setup-step-num">2</div>
+              <div class="setup-step-content">
+                <div class="setup-step-title">粘贴 Webhook URL</div>
+                <div class="cmd-block">
+                  <input class="cmd-text" style="background: none; border: none; outline: none; width: 100%; color: var(--amber);" placeholder="https://open.feishu.cn/open-apis/bot/v2/hook/..." />
+                </div>
+                <button class="btn-connect" style="margin-top: 0.5rem;">保存连接</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Web only -->
+      <div class="channel web" data-channel="web">
+        <div class="channel-head">
+          <div class="channel-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>
+          </div>
+          <div class="channel-info">
+            <div class="channel-name">仅网页 Dashboard</div>
+            <div class="channel-desc">不接外部渠道 · 只在 meridian.app 查看</div>
+          </div>
+          <div class="channel-time">
+            <strong>0 SEC</strong>
+            <span>NO SETUP</span>
+          </div>
+          <button class="channel-toggle">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6l5 5 5-5"/></svg>
+          </button>
+        </div>
+        <div class="channel-body">
+          <div style="padding: 1rem 0; color: var(--ink-3); font-size: 13.5px;">
+            选这个就直接进 Dashboard，所有调度只在网页可见，不推送到任何外部渠道。<br>
+            <strong style="color: var(--ink-2);">适合：</strong>不想被通知打扰，自己定时上线刷 inbox 的创作者。
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="step-foot">
+      <button class="btn-back">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3L5 8l5 5"/></svg>
+        BACK
+      </button>
+      <button class="btn-next" id="next-2">
+        继续
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       STEP 3 — Preview + send test
+  ============================================================ -->
+  <section class="step" data-step-content="3">
+    <div class="step-eyebrow">STEP 03 / 看一眼，发条测试</div>
+    <h1 class="step-title">这就是<em>你以后会收到的样子。</em></h1>
+    <p class="step-sub">
+      下面是我们根据你的配置，从今早实时数据生成的一条样本调度。如果满意，按下"发送测试"立即推到你的 Telegram。
+    </p>
+
+    <!-- Configuration summary -->
+    <div class="ready-summary">
+      <div class="ready-row">
+        <div class="ready-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg>
+        </div>
+        <div class="ready-content">
+          <div class="ready-label">PROFILE</div>
+          <div class="ready-value" id="summary-profile">中国观察者 · 5 个话题已开启</div>
+        </div>
+        <button class="ready-edit" onclick="goToStep(1)">EDIT</button>
+      </div>
+      <div class="ready-row">
+        <div class="ready-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg>
+        </div>
+        <div class="ready-content">
+          <div class="ready-label">DELIVERY</div>
+          <div class="ready-value" id="summary-channel">Telegram · @your_handle · 已连接</div>
+        </div>
+        <button class="ready-edit" onclick="goToStep(2)">EDIT</button>
+      </div>
+      <div class="ready-row">
+        <div class="ready-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg>
+        </div>
+        <div class="ready-content">
+          <div class="ready-label">FREQUENCY</div>
+          <div class="ready-value">每小时整点 · 最多 8 条 · 智能去重</div>
+        </div>
+        <button class="ready-edit">EDIT</button>
+      </div>
+    </div>
+
+    <!-- Sample dispatch preview -->
+    <div class="preview-frame">
+      <span class="preview-label">SAMPLE DISPATCH</span>
+      <div class="preview-dispatch" id="preview-dispatch">
+        <div class="pd-row1">
+          <span class="pd-tag" style="color: var(--tag-cn); border-color: rgba(239, 68, 68, 0.35);">中共/人权</span>
+          <span class="pd-tag" style="color: var(--tag-break); border-color: rgba(248, 113, 113, 0.35);">突发</span>
+          <span class="pd-time">2 MIN AGO</span>
+        </div>
+        <h3 class="pd-title">美国财政部对三名新疆官员实施 Magnitsky 制裁</h3>
+        <p class="pd-summary">美国财政部 OFAC 周五宣布对三名新疆地方官员实施全球 Magnitsky 人权制裁，冻结其在美资产并禁止入境。这是拜登政府离任前最后一批中国相关人权制裁，欧盟与英国预计跟进。</p>
+        <div class="pd-sig">
+          <div class="pd-sig-label">为什么<br>重要</div>
+          <div class="pd-sig-text">首次直接点名地市级官员，标志制裁机制下沉。对中文圈讨论"个人责任"和"跨国问责"是关键节点。</div>
+        </div>
+        <div class="pd-hook">"制裁名单第一次精确到了地级市 — 这意味着什么？"</div>
+        <div class="pd-foot">REUTERS · WSJ · RFA · DW · NIKKEI · SCORE 0.94</div>
+      </div>
+    </div>
+
+    <div class="test-cta">
+      <button class="btn-test" id="btn-test" onclick="sendTest(this)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 8l5 5L14 4"/></svg>
+        现在发送一条测试到 Telegram
+      </button>
+      <div class="test-or">
+        或者等下个整点 · 距下一波调度还有 <strong id="next-time">23 分钟</strong>
+      </div>
+    </div>
+
+    <div class="step-foot">
+      <button class="btn-back">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3L5 8l5 5"/></svg>
+        BACK
+      </button>
+      <button class="btn-next" id="next-3">
+        进入 Dashboard
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       Completion screen
+  ============================================================ -->
+  <section class="complete" id="complete">
+    <div class="check-anim">
+      <svg width="36" height="36" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 8l3 3 7-7"/></svg>
+    </div>
+    <h2>你已就位。<em>下一波信号即将到来。</em></h2>
+    <p>第一条调度将在<strong style="color: var(--ink);">下个整点</strong>送达你的 Telegram。<br>
+    随时可以在 Dashboard 里调整话题、信源、推送频率。</p>
+    <a href="meridian-dashboard.html" class="complete-cta">
+      打开 Dashboard
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3l5 5-5 5"/></svg>
+    </a>
+  </section>
+
+  <div class="help-hint">
+    需要帮助？<a href="#">看 5 分钟视频教程</a> · 或<a href="#">联系真人客服</a>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// State
+// ============================================================
+const state = {
+  step: 1,
+  persona: null,
+  channel: 'telegram',
+  connected: false,
+};
+
+const personaConfig = {
+  'cn-watcher': { label: '中国观察者', topics: 5 },
+  'us-politics': { label: '美国政治评论员', topics: 4 },
+  'tech-analyst': { label: '科技分析师', topics: 3 },
+  'econ-writer': { label: '财经评论员', topics: 3 },
+  'global-affairs': { label: '全球时事评论', topics: 4 },
+  'all-in-one': { label: '全部话题', topics: 5 },
+};
+
+// ============================================================
+// Persona selection
+// ============================================================
+const personaBtns = document.querySelectorAll('.persona');
+personaBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    personaBtns.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state.persona = btn.dataset.persona;
+    document.getElementById('next-1').disabled = false;
+    // Auto-advance after small delay (delight)
+    setTimeout(() => {
+      if (state.step === 1) goToStep(2);
+    }, 600);
+  });
+});
+
+// ============================================================
+// Channel selection (only one expanded at a time)
+// ============================================================
+const channels = document.querySelectorAll('.channel');
+channels.forEach(ch => {
+  const head = ch.querySelector('.channel-head');
+  head.addEventListener('click', (e) => {
+    if (e.target.closest('button:not(.channel-toggle)')) return;
+    const wasExpanded = ch.classList.contains('expanded');
+    channels.forEach(c => c.classList.remove('expanded'));
+    if (!wasExpanded) {
+      ch.classList.add('expanded');
+      state.channel = ch.dataset.channel;
+      // For "web only" no connection needed
+      if (state.channel === 'web') state.connected = true;
+    }
+  });
+});
+
+// ============================================================
+// Telegram simulated connect
+// ============================================================
+function simulateConnect() {
+  const btn = document.getElementById('btn-connect');
+  const status = document.getElementById('connect-status');
+  const text = document.getElementById('status-text');
+  
+  btn.disabled = true;
+  btn.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="animation: spin 1s linear infinite;">
+      <path d="M8 1v3M8 12v3M3.5 3.5l2 2M10.5 10.5l2 2M1 8h3M12 8h3M3.5 12.5l2-2M10.5 5.5l2-2"/>
+    </svg>
+    检测中...
+  `;
+  status.classList.add('waiting');
+  text.textContent = '等待 Telegram 确认…';
+  
+  // Simulate steps 1 & 2 marking done
+  setTimeout(() => {
+    document.querySelectorAll('.setup-step').forEach((s, i) => {
+      if (i === 1) {
+        s.classList.add('done');
+        s.querySelector('.setup-step-num').innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg>';
+      }
+    });
+  }, 1200);
+  
+  setTimeout(() => {
+    document.querySelectorAll('.setup-step').forEach((s, i) => {
+      if (i === 2) {
+        s.classList.add('done');
+        s.querySelector('.setup-step-num').innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg>';
+      }
+    });
+    status.classList.remove('waiting');
+    status.classList.add('connected');
+    text.textContent = '已连接 · @your_handle';
+    btn.style.display = 'none';
+    state.connected = true;
+  }, 2400);
+}
+
+// ============================================================
+// Copy command
+// ============================================================
+function copyCmd(btn) {
+  const text = btn.parentElement.querySelector('.cmd-text').textContent;
+  if (navigator.clipboard) navigator.clipboard.writeText(text);
+  btn.textContent = '✓ COPIED';
+  btn.classList.add('copied');
+  setTimeout(() => {
+    btn.textContent = 'COPY';
+    btn.classList.remove('copied');
+  }, 2000);
+}
+
+// ============================================================
+// Step navigation
+// ============================================================
+function goToStep(n) {
+  state.step = n;
+  
+  // Show correct content
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('current'));
+  document.querySelector(`[data-step-content="${n}"]`)?.classList.add('current');
+  
+  // Update progress pills
+  document.querySelectorAll('.step-pill').forEach(p => {
+    const ps = parseInt(p.dataset.step);
+    p.classList.remove('active', 'done');
+    if (ps < n) p.classList.add('done');
+    else if (ps === n) p.classList.add('active');
+  });
+  
+  // Update progress lines
+  document.getElementById('line-1').classList.toggle('done', n >= 2);
+  document.getElementById('line-2').classList.toggle('done', n >= 3);
+  
+  // Update step-3 summary based on choices
+  if (n === 3) {
+    const p = personaConfig[state.persona];
+    if (p) {
+      document.getElementById('summary-profile').textContent = `${p.label} · ${p.topics} 个话题已开启`;
+    }
+    const channelLabels = {
+      telegram: 'Telegram · @your_handle · 已连接',
+      discord: 'Discord Webhook · 已配置',
+      feishu: '飞书群机器人 · 已配置',
+      web: '仅网页 Dashboard · 不外推',
+    };
+    document.getElementById('summary-channel').textContent = channelLabels[state.channel] || '';
+  }
+  
+  // Scroll to top of content
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('next-1').addEventListener('click', () => goToStep(2));
+document.getElementById('next-2').addEventListener('click', () => goToStep(3));
+document.getElementById('next-3').addEventListener('click', () => {
+  // Show celebration
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('current'));
+  document.getElementById('complete').classList.add('show');
+  document.querySelectorAll('.step-pill').forEach(p => p.classList.add('done'));
+  document.querySelectorAll('.step-line').forEach(l => l.classList.add('done'));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+document.querySelectorAll('.btn-back').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (state.step > 1) goToStep(state.step - 1);
+  });
+});
+
+// ============================================================
+// Send test (simulated)
+// ============================================================
+function sendTest(btn) {
+  btn.disabled = true;
+  btn.innerHTML = `
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="animation: spin 1s linear infinite;">
+      <path d="M8 1v3M8 12v3M3.5 3.5l2 2M10.5 10.5l2 2M1 8h3M12 8h3M3.5 12.5l2-2M10.5 5.5l2-2"/>
+    </svg>
+    发送中…
+  `;
+  setTimeout(() => {
+    btn.classList.add('sent');
+    btn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg>
+      已发送 · 检查你的 Telegram
+    `;
+  }, 1600);
+}
+
+// ============================================================
+// Countdown to next hour
+// ============================================================
+function updateCountdown() {
+  const now = new Date();
+  const next = new Date(now);
+  next.setHours(now.getHours() + 1, 0, 0, 0);
+  const diff = next - now;
+  const mins = Math.floor(diff / 60000);
+  const el = document.getElementById('next-time');
+  if (el) el.textContent = mins + ' 分钟';
+}
+updateCountdown();
+setInterval(updateCountdown, 30000);
+
+// Add spin keyframe globally
+const style = document.createElement('style');
+style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+document.head.appendChild(style);
+</script>
+</body>
+</html>

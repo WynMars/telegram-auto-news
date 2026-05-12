@@ -1,0 +1,54 @@
+name: News Bot
+
+on:
+  schedule:
+    # 每小时整点跑一次。注意：GitHub Actions 的定时任务在高峰期可能延迟 5-30 分钟，
+    # 偶尔会跳过，这是平台限制。绝大多数小时仍会按时执行。
+    - cron: '0 * * * *'
+  workflow_dispatch:  # 允许在 Actions 页面手动触发，用于测试
+
+permissions:
+  contents: write  # 需要写权限把 state/seen.json commit 回仓库
+
+concurrency:
+  group: news-bot
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run news bot
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MAX_ARTICLES_PER_RUN: '8'
+          LOOKBACK_HOURS: '3'
+          GEMINI_MODEL: 'gemini-2.5-flash'
+        run: python news_bot.py
+
+      - name: Commit state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update state $(date -u +%FT%TZ) [skip ci]"
+            git push
+          else
+            echo "No state changes to commit"
+          fi

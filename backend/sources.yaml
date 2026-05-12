@@ -1,0 +1,46 @@
+# RSS 源配置
+# 添加/移除任意 feed 都很简单，category 名字仅用于日志可读性
+# 所有 feed 在过滤阶段会被合并
+
+us_politics_tech_english:
+  Politico: https://www.politico.com/rss/politicopicks.xml
+  Axios: https://api.axios.com/feed/
+  TechCrunch: https://techcrunch.com/feed/
+  The Verge: https://www.theverge.com/rss/index.xml
+  Ars Technica: https://feeds.arstechnica.com/arstechnica/index/
+
+global_english:
+  BBC World: https://feeds.bbci.co.uk/news/world/rss.xml
+  NYT World: https://rss.nytimes.com/services/xml/rss/nyt/World.xml
+  WSJ World: https://feeds.a.dj.com/rss/RSSWorldNews.xml
+  Guardian World: https://www.theguardian.com/world/rss
+  Al Jazeera: https://www.aljazeera.com/xml/rss/all.xml
+  CNN World: http://rss.cnn.com/rss/edition_world.rss
+  AP Top: https://feeds.apnews.com/rss/topnews
+
+economy_finance:
+  WSJ Markets: https://feeds.a.dj.com/rss/RSSMarketsMain.xml
+  CNBC Top: https://www.cnbc.com/id/100003114/device/rss/rss.html
+
+asia_china_focused:
+  Nikkei Asia: https://asia.nikkei.com/rss/feed/nar
+  The Diplomat: https://thediplomat.com/feed/
+  China Digital Times: https://chinadigitaltimes.net/feed/
+  DW 中文: https://rss.dw.com/rdf/rss-chi-all
+  RFI 中文: https://www.rfi.fr/cn/rss
+  BBC 中文: https://feeds.bbci.co.uk/zhongwen/simp/rss.xml
+  自由时报: https://news.ltn.com.tw/rss/all.xml
+
+# Google News RSS — 稳定且可针对话题搜索，对中文圈尤其有用
+google_news_targeted:
+  GN-新疆: https://news.google.com/rss/search?q=%E6%96%B0%E7%96%86+OR+Xinjiang+OR+Uyghur&hl=zh-CN&gl=US&ceid=US:zh
+  GN-香港: https://news.google.com/rss/search?q=%E9%A6%99%E6%B8%AF+OR+%22Hong+Kong%22&hl=zh-CN&gl=US&ceid=US:zh
+  GN-台海: https://news.google.com/rss/search?q=%E5%8F%B0%E6%B5%B7+OR+Taiwan+China&hl=zh-CN&gl=US&ceid=US:zh
+  GN-习近平: https://news.google.com/rss/search?q=%E4%B9%A0%E8%BF%91%E5%B9%B3+OR+%22Xi+Jinping%22&hl=zh-CN&gl=US&ceid=US:zh
+  GN-Trump: https://news.google.com/rss/search?q=Trump&hl=en-US&gl=US&ceid=US:en
+  GN-SCOTUS: https://news.google.com/rss/search?q=%22Supreme+Court%22+OR+SCOTUS&hl=en-US&gl=US&ceid=US:en
+  GN-Fed: https://news.google.com/rss/search?q=%22Federal+Reserve%22+OR+FOMC&hl=en-US&gl=US&ceid=US:en
+  GN-AI: https://news.google.com/rss/search?q=OpenAI+OR+Anthropic+OR+%22AI+regulation%22&hl=en-US&gl=US&ceid=US:en
+  GN-半导体: https://news.google.com/rss/search?q=%E5%8D%8A%E5%AF%BC%E4%BD%93+OR+%22chip+ban%22+OR+TSMC&hl=zh-CN&gl=US&ceid=US:zh
+  GN-Ukraine: https://news.google.com/rss/search?q=Ukraine+Russia+war&hl=en-US&gl=US&ceid=US:en
+  GN-Israel: https://news.google.com/rss/search?q=Israel+Gaza+OR+Iran&hl=en-US&gl=US&ceid=US:en

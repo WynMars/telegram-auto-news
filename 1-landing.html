@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MERIDIAN — 全球新闻情报，为独立创作者而生</title>
+<meta name="description" content="为独立中文内容创作者打造的全球新闻情报系统。每小时一次精选编辑，直送你的工作流。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500;600&family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ========================================================================
+   MERIDIAN — Editorial Terminal
+   Design system
+======================================================================== */
+
+:root {
+  /* Surfaces */
+  --bg: #0a0908;
+  --bg-2: #131110;
+  --bg-3: #1a1816;
+  --bg-4: #211e1b;
+  
+  /* Borders */
+  --line: rgba(245, 239, 230, 0.08);
+  --line-strong: rgba(245, 239, 230, 0.16);
+  --line-bright: rgba(245, 239, 230, 0.32);
+  
+  /* Type */
+  --ink: #f5efe6;
+  --ink-2: #c9c2b6;
+  --ink-3: #8a8478;
+  --ink-4: #5a564f;
+  
+  /* Accents */
+  --signal: #e63946;
+  --amber: #e9a23b;
+  --live: #4ade80;
+  --paper: #f5efe6;
+  
+  /* Type families */
+  --serif: 'Fraunces', 'Noto Serif SC', Georgia, serif;
+  --sans: 'Geist', 'Noto Serif SC', -apple-system, system-ui, sans-serif;
+  --mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+  --serif-cn: 'Noto Serif SC', 'Songti SC', serif;
+  
+  /* Spacing */
+  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --section-y: clamp(5rem, 10vw, 9rem);
+  --max-w: 1280px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  font-feature-settings: "ss01", "ss02", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Subtle film grain overlay for warmth */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+img { max-width: 100%; display: block; }
+
+::selection { background: var(--signal); color: var(--paper); }
+
+/* ========================================================================
+   Layout primitives
+======================================================================== */
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.display {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+}
+
+.display-italic { font-style: italic; font-weight: 300; }
+
+/* ========================================================================
+   Top status bar — terminal-style
+======================================================================== */
+.statusbar {
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+.statusbar-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0.625rem var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  color: var(--ink-3);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.status-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ink-2);
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--live);
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.status-meta { color: var(--ink-4); }
+.status-meta span { color: var(--ink-2); }
+.status-utc { margin-left: auto; }
+
+/* ========================================================================
+   Navigation
+======================================================================== */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 9, 8, 0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 1.125rem var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+.logo {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.375rem;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.logo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--signal);
+  display: inline-block;
+}
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.nav-links a {
+  transition: color 200ms;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-cta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.nav-signin {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.nav-signin:hover { color: var(--ink); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.125rem;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  border-radius: 4px;
+  transition: all 200ms;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--paper);
+  color: var(--bg);
+}
+.btn-primary:hover {
+  background: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(245, 239, 230, 0.2);
+}
+.btn-ghost {
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+}
+.btn-ghost:hover { border-color: var(--line-bright); background: var(--bg-2); }
+.btn-arrow { transition: transform 200ms; }
+.btn:hover .btn-arrow { transform: translateX(2px); }
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+}
+
+/* ========================================================================
+   Hero
+======================================================================== */
+.hero {
+  padding: clamp(4rem, 10vw, 8rem) 0 clamp(3rem, 6vw, 5rem);
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(circle, rgba(233, 162, 59, 0.06), transparent 60%);
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  position: relative;
+}
+.hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.hero-meta-divider {
+  width: 32px;
+  height: 1px;
+  background: var(--line-strong);
+}
+.hero-h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+  margin-bottom: 1.75rem;
+  max-width: 18ch;
+}
+.hero-h1 em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ink-2);
+}
+.hero-h1 .signal-dot {
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  background: var(--signal);
+  border-radius: 50%;
+  vertical-align: 0.45em;
+  margin-left: 0.05em;
+}
+.hero-sub {
+  font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 56ch;
+  margin-bottom: 2.75rem;
+}
+.hero-sub strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 2rem;
+  margin-bottom: 3.5rem;
+}
+.btn-lg {
+  padding: 0.875rem 1.5rem;
+  font-size: 14px;
+}
+.hero-trust {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+.hero-trust .av {
+  display: flex;
+}
+.hero-trust .av span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+  background: linear-gradient(135deg, var(--bg-3), var(--bg-4));
+  margin-left: -8px;
+}
+.hero-trust .av span:first-child { margin-left: 0; background: linear-gradient(135deg, #4a5568, #2d3748); }
+.hero-trust .av span:nth-child(2) { background: linear-gradient(135deg, #c19a6b, #8b6f47); }
+.hero-trust .av span:nth-child(3) { background: linear-gradient(135deg, #2d3748, #1a202c); }
+.hero-trust .av span:nth-child(4) { background: linear-gradient(135deg, #b54a3a, #7a3025); }
+
+/* Hero stats */
+.hero-stats {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+.stat-item .stat-num {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 0.625rem;
+}
+.stat-item .stat-num em {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 0.55em;
+  color: var(--ink-3);
+  letter-spacing: 0;
+  margin-left: 0.25rem;
+}
+.stat-item .stat-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+@media (max-width: 768px) {
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ========================================================================
+   Live ticker
+======================================================================== */
+.ticker-section {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+  overflow: hidden;
+  position: relative;
+}
+.ticker-section::before, .ticker-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100px;
+  z-index: 2;
+  pointer-events: none;
+}
+.ticker-section::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-2), transparent);
+}
+.ticker-section::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-2), transparent);
+}
+.ticker-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  background: var(--bg-2);
+  padding: 0 1.25rem;
+  display: flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--signal);
+  border-right: 1px solid var(--line);
+  gap: 0.5rem;
+}
+.ticker-label .status-dot { background: var(--signal); box-shadow: 0 0 8px rgba(230, 57, 70, 0.7); }
+.ticker {
+  display: flex;
+  white-space: nowrap;
+  padding: 0.875rem 0 0.875rem 9rem;
+  animation: scroll-ticker 90s linear infinite;
+}
+.ticker:hover { animation-play-state: paused; }
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 2rem;
+  border-right: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.ticker-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);
+  padding: 2px 7px;
+  border: 1px solid rgba(233, 162, 59, 0.3);
+  border-radius: 2px;
+}
+.ticker-tag.tag-cn { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); }
+.ticker-tag.tag-us { color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); }
+.ticker-tag.tag-tech { color: #c084fc; border-color: rgba(192, 132, 252, 0.3); }
+.ticker-tag.tag-econ { color: #4ade80; border-color: rgba(74, 222, 128, 0.3); }
+.ticker-tag.tag-break { color: #f87171; border-color: rgba(248, 113, 113, 0.3); }
+.ticker-time {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-4);
+}
+@keyframes scroll-ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ========================================================================
+   Section: Demo dispatches
+======================================================================== */
+.section {
+  padding: var(--section-y) 0;
+}
+.section-head {
+  margin-bottom: 4rem;
+  max-width: 720px;
+}
+.section-head h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  margin-bottom: 1.25rem;
+}
+.section-head h2 em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ink-2);
+}
+.section-head p {
+  color: var(--ink-2);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  max-width: 60ch;
+}
+
+/* Topic switcher (interactive) */
+.topic-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--line);
+}
+.topic-chip {
+  padding: 0.5rem 0.875rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  transition: all 200ms;
+}
+.topic-chip:hover { color: var(--ink); border-color: var(--line-bright); }
+.topic-chip.active {
+  color: var(--bg);
+  background: var(--paper);
+  border-color: var(--paper);
+}
+
+/* Dispatch cards grid */
+.dispatch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+@media (max-width: 1024px) {
+  .dispatch-grid { grid-template-columns: 1fr; }
+}
+
+.dispatch {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+.dispatch:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  background: var(--bg-3);
+}
+.dispatch-header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.dispatch-tags {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+.dispatch-time {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--ink-4);
+}
+.dispatch-title {
+  font-family: var(--serif);
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: var(--ink);
+}
+.dispatch-summary {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  margin-bottom: 1.5rem;
+}
+.dispatch-section {
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+  margin-bottom: 0.875rem;
+}
+.dispatch-section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.dispatch-section-label::before {
+  content: '';
+  width: 14px;
+  height: 1px;
+  background: var(--amber);
+}
+.dispatch-significance {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  font-style: italic;
+}
+.dispatch-hook {
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink);
+  font-weight: 500;
+}
+.dispatch-footer {
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.05em;
+}
+.dispatch-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.dispatch-source-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ink-3);
+}
+.dispatch-link {
+  color: var(--ink-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  transition: color 200ms;
+}
+.dispatch-link:hover { color: var(--ink); }
+
+.demo-meta {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.demo-meta strong { color: var(--ink); font-weight: 500; }
+
+/* ========================================================================
+   Section: Why (problem)
+======================================================================== */
+.why {
+  background: var(--bg-2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.pull-quote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.875rem, 4vw, 3rem);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 4rem;
+  max-width: 24ch;
+  color: var(--ink);
+  position: relative;
+}
+.pull-quote::before {
+  content: '"';
+  font-size: 2em;
+  font-style: normal;
+  color: var(--signal);
+  position: absolute;
+  top: -0.3em;
+  left: -0.5em;
+  opacity: 0.5;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 768px) {
+  .why-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+.why-item {
+  display: flex;
+  flex-direction: column;
+}
+.why-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--signal);
+  margin-bottom: 1.25rem;
+}
+.why-title {
+  font-family: var(--serif);
+  font-size: 1.625rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: 0.875rem;
+}
+.why-body {
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ========================================================================
+   Section: How it works
+======================================================================== */
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+@media (max-width: 1024px) {
+  .how-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .how-grid { grid-template-columns: 1fr; }
+}
+.how-step {
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 2.25rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  position: relative;
+  transition: background 300ms;
+}
+.how-step:hover { background: var(--bg-2); }
+.how-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--ink-4);
+  margin-bottom: 2.5rem;
+}
+.how-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  color: var(--amber);
+}
+.how-title {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+}
+.how-body {
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.6;
+  flex: 1;
+}
+.how-detail {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.05em;
+}
+
+/* ========================================================================
+   Section: Topics
+======================================================================== */
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+@media (max-width: 1024px) {
+  .topics-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .topics-grid { grid-template-columns: 1fr; }
+}
+.topic-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1.75rem;
+  transition: all 300ms;
+  position: relative;
+  overflow: hidden;
+}
+.topic-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+.topic-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--accent, var(--amber));
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.topic-card:hover::before { transform: scaleX(1); }
+.topic-card.special {
+  background: transparent;
+  border-style: dashed;
+}
+.topic-flag {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  filter: grayscale(0.2);
+}
+.topic-name {
+  font-family: var(--serif);
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+.topic-en {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  margin-bottom: 1.25rem;
+}
+.topic-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 1.25rem;
+}
+.topic-source {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  padding: 3px 8px;
+  background: var(--bg-3);
+  border-radius: 3px;
+}
+.topic-desc {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.topic-card.special .topic-name { color: var(--amber); }
+
+/* ========================================================================
+   Section: Pricing
+======================================================================== */
+.pricing-toggle {
+  display: inline-flex;
+  margin-bottom: 4rem;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 3px;
+}
+.toggle-btn {
+  padding: 0.5rem 1.125rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border-radius: 3px;
+  transition: all 200ms;
+}
+.toggle-btn.active {
+  background: var(--paper);
+  color: var(--bg);
+}
+.toggle-save {
+  margin-left: 0.5rem;
+  font-size: 9px;
+  color: var(--live);
+  letter-spacing: 0.1em;
+}
+.toggle-btn.active .toggle-save { color: var(--bg); opacity: 0.5; }
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+@media (max-width: 1024px) {
+  .pricing-grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
+}
+.tier {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 2rem 1.875rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.tier.popular {
+  border-color: var(--amber);
+  background: var(--bg-3);
+}
+.tier.popular::before {
+  content: 'MOST POPULAR';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--amber);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  padding: 4px 12px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+.tier-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 0.75rem;
+}
+.tier-tagline {
+  font-family: var(--serif);
+  font-size: 1.125rem;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ink-2);
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+.tier-price {
+  font-family: var(--serif);
+  font-size: 3.25rem;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: baseline;
+}
+.tier-price .currency {
+  font-size: 0.5em;
+  color: var(--ink-3);
+  margin-right: 0.1em;
+}
+.tier-price .period {
+  font-family: var(--mono);
+  font-size: 0.25em;
+  font-weight: 400;
+  color: var(--ink-3);
+  letter-spacing: 0.1em;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+}
+.tier-price-billed {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-4);
+  letter-spacing: 0.05em;
+  margin-bottom: 2rem;
+}
+.tier-cta {
+  width: 100%;
+  justify-content: center;
+  padding: 0.875rem 1.25rem;
+  margin-bottom: 2rem;
+}
+.tier-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  flex: 1;
+}
+.tier-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.tier-features li::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 3px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%2378736b' stroke-width='1.6'%3E%3Cpath d='M3 8l3.5 3.5L13 5'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+.tier.popular .tier-features li::before {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23e9a23b' stroke-width='1.6'%3E%3Cpath d='M3 8l3.5 3.5L13 5'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+.tier-features strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ========================================================================
+   Pull quote block
+======================================================================== */
+.testimonial {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+}
+.testimonial-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--section-y) var(--gutter);
+  text-align: center;
+}
+.testimonial-quote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.625rem, 3.5vw, 2.5rem);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--ink);
+  margin-bottom: 2rem;
+}
+.testimonial-attr {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.testimonial-attr strong { color: var(--ink); font-weight: 500; }
+
+/* ========================================================================
+   FAQ
+======================================================================== */
+.faq-list {
+  border-top: 1px solid var(--line);
+}
+.faq-item {
+  border-bottom: 1px solid var(--line);
+  padding: 1.75rem 0;
+  cursor: pointer;
+}
+.faq-item summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  list-style: none;
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  transition: color 200ms;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::before {
+  content: counter(faq, decimal-leading-zero);
+  counter-increment: faq;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--ink-4);
+  margin-top: 6px;
+  flex-shrink: 0;
+  width: 32px;
+}
+.faq-item summary::after {
+  content: '+';
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--ink-3);
+  transition: transform 300ms;
+  flex-shrink: 0;
+}
+.faq-item[open] summary::after {
+  transform: rotate(45deg);
+  color: var(--signal);
+}
+.faq-item:hover summary { color: var(--ink); }
+.faq-answer {
+  margin-top: 1.25rem;
+  margin-left: 32px;
+  padding-right: 3rem;
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 65ch;
+}
+.faq-list { counter-reset: faq; }
+
+/* ========================================================================
+   Final CTA
+======================================================================== */
+.final {
+  padding: clamp(6rem, 12vw, 10rem) 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.final::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(233, 162, 59, 0.08), transparent 60%);
+  pointer-events: none;
+}
+.final-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  position: relative;
+}
+.final-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 2rem;
+}
+.final-meta .status-dot { background: var(--live); }
+.final h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 1.5rem;
+}
+.final h2 em { font-style: italic; font-weight: 300; color: var(--ink-2); }
+.final p {
+  color: var(--ink-2);
+  font-size: 1.125rem;
+  line-height: 1.55;
+  margin-bottom: 2.5rem;
+  max-width: 50ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+.final-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ========================================================================
+   Footer
+======================================================================== */
+.footer {
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+  padding: 4rem 0 2rem;
+}
+.footer-grid {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+@media (max-width: 768px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+.footer-brand .logo { margin-bottom: 1.25rem; }
+.footer-brand p {
+  color: var(--ink-3);
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 36ch;
+  margin-bottom: 1.5rem;
+}
+.footer-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.05em;
+}
+.footer-col h4 {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 1.25rem;
+  font-weight: 500;
+}
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.625rem; }
+.footer-col a {
+  font-size: 14px;
+  color: var(--ink-2);
+  transition: color 200ms;
+}
+.footer-col a:hover { color: var(--ink); }
+.footer-bottom {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 2rem var(--gutter) 0;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-4);
+  letter-spacing: 0.05em;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-bottom a { color: var(--ink-3); }
+.footer-bottom a:hover { color: var(--ink-2); }
+
+/* ========================================================================
+   Reveal animation
+======================================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hero reveals on load */
+.hero .hero-meta { animation: reveal-in 700ms 0.1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero .hero-h1 { animation: reveal-in 900ms 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero .hero-sub { animation: reveal-in 900ms 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero .hero-cta { animation: reveal-in 900ms 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.hero .hero-stats { animation: reveal-in 900ms 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  .ticker { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top status bar -->
+<div class="statusbar">
+  <div class="statusbar-inner">
+    <span class="status-live"><span class="status-dot"></span>ALL SOURCES OPERATIONAL</span>
+    <span class="status-meta">LAST DISPATCH <span id="last-dispatch">12 MIN AGO</span></span>
+    <span class="status-meta">QUEUE <span>03</span></span>
+    <span class="status-meta">SOURCES <span>34</span></span>
+    <span class="status-utc">UTC <span id="utc-time">—</span></span>
+  </div>
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo">MERIDIAN<span class="logo-dot"></span></a>
+    <ul class="nav-links">
+      <li><a href="#how">Product</a></li>
+      <li><a href="#topics">Topics</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#editorial">Editorial</a></li>
+      <li><a href="#changelog">Changelog</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="#" class="nav-signin">Sign in</a>
+      <a href="#pricing" class="btn btn-primary">Start free trial <span class="btn-arrow">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-meta">
+      <span class="eyebrow">EST. MMXXVI</span>
+      <span class="hero-meta-divider"></span>
+      <span class="eyebrow">NEW YORK · TAIPEI · TOKYO · BERLIN</span>
+    </div>
+    <h1 class="hero-h1">
+      The signal,<br>
+      <em>not the noise<span class="signal-dot"></span></em>
+    </h1>
+    <p class="hero-sub">
+      为独立中文创作者打造的全球新闻情报系统。<strong>34 个国际信源</strong>，每小时一次精选编辑，附带中文摘要、立场解读、推文钩子 — 直送 Telegram、Discord、飞书或你的工作流。
+    </p>
+    <div class="hero-cta">
+      <a href="#pricing" class="btn btn-primary btn-lg">开始 7 天免费试用 <span class="btn-arrow">→</span></a>
+      <a href="#demo" class="btn btn-ghost btn-lg">观看一次实时调度</a>
+      <div class="hero-trust">
+        <div class="av">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <span>已被 <strong style="color: var(--ink);">2,400+</strong> 创作者使用</span>
+      </div>
+    </div>
+
+    <!-- Hero stats -->
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">99.7<em>%</em></div>
+        <div class="stat-label">Signal precision</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">60<em>min</em></div>
+        <div class="stat-label">Refresh interval</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">34<em>src</em></div>
+        <div class="stat-label">Verified sources</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">8<em>lang</em></div>
+        <div class="stat-label">Languages parsed</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Live ticker -->
+<div class="ticker-section">
+  <div class="ticker-label"><span class="status-dot"></span>LIVE</div>
+  <div class="ticker">
+    <!-- Two copies for seamless loop -->
+    <span class="ticker-item"><span class="ticker-tag tag-cn">中共/人权</span>新疆官员被国际制裁，被列入新一轮 Magnitsky 名单<span class="ticker-time">14:32 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-us">美国政坛</span>SCOTUS 以 6-3 通过总统行政权扩展裁定<span class="ticker-time">14:18 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-tech">科技</span>NVIDIA 推出新款 H300 GPU，明确禁止销往中国大陆<span class="ticker-time">13:55 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-econ">经济</span>美联储会议纪要释放 9 月降息信号，市场反应剧烈<span class="ticker-time">13:42 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-break">全球突发</span>俄乌战线乌东再现激烈交火，多国谴责<span class="ticker-time">13:11 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-cn">中共/人权</span>香港国安法新案宣判，三名民主派人士被判 8 年<span class="ticker-time">12:48 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-us">美国政坛</span>众议院通过 TikTok 强制剥离法案修订版<span class="ticker-time">12:24 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-tech">科技</span>OpenAI 发布 GPT-5 多模态版本，免费用户可访问<span class="ticker-time">11:59 UTC</span></span>
+
+    <!-- Duplicate for seamless scroll -->
+    <span class="ticker-item"><span class="ticker-tag tag-cn">中共/人权</span>新疆官员被国际制裁，被列入新一轮 Magnitsky 名单<span class="ticker-time">14:32 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-us">美国政坛</span>SCOTUS 以 6-3 通过总统行政权扩展裁定<span class="ticker-time">14:18 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-tech">科技</span>NVIDIA 推出新款 H300 GPU，明确禁止销往中国大陆<span class="ticker-time">13:55 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-econ">经济</span>美联储会议纪要释放 9 月降息信号，市场反应剧烈<span class="ticker-time">13:42 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-break">全球突发</span>俄乌战线乌东再现激烈交火，多国谴责<span class="ticker-time">13:11 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-cn">中共/人权</span>香港国安法新案宣判，三名民主派人士被判 8 年<span class="ticker-time">12:48 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-us">美国政坛</span>众议院通过 TikTok 强制剥离法案修订版<span class="ticker-time">12:24 UTC</span></span>
+    <span class="ticker-item"><span class="ticker-tag tag-tech">科技</span>OpenAI 发布 GPT-5 多模态版本，免费用户可访问<span class="ticker-time">11:59 UTC</span></span>
+  </div>
+</div>
+
+<!-- Section 01: What lands -->
+<section class="section" id="demo">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="section-label">01 / WHAT LANDS</div>
+      <h2>每条调度都是<em>完整的故事单元</em>。</h2>
+      <p>不是 RSS 标题流，不是机器翻译。每条 dispatch 都包含：经过编辑的中文摘要、立场视角解读、可直接改写的推文钩子，以及原文链接。这是真实的产品输出 —</p>
+    </div>
+
+    <!-- Topic switcher -->
+    <div class="topic-switcher reveal" id="topic-switcher">
+      <button class="topic-chip active" data-topic="all">All</button>
+      <button class="topic-chip" data-topic="cn">中共 / 人权</button>
+      <button class="topic-chip" data-topic="us">美国政坛</button>
+      <button class="topic-chip" data-topic="tech">科技</button>
+      <button class="topic-chip" data-topic="econ">经济</button>
+      <button class="topic-chip" data-topic="break">全球突发</button>
+    </div>
+
+    <!-- Dispatch cards -->
+    <div class="dispatch-grid" id="dispatch-grid">
+
+      <article class="dispatch reveal" data-topic="cn break">
+        <div class="dispatch-header">
+          <div class="dispatch-tags">
+            <span class="ticker-tag tag-cn">中共/人权</span>
+            <span class="ticker-tag tag-break">全球突发</span>
+          </div>
+          <span class="dispatch-time">2 MIN AGO</span>
+        </div>
+        <h3 class="dispatch-title">美国财政部对三名新疆官员实施 Magnitsky 制裁</h3>
+        <p class="dispatch-summary">
+          美国财政部 OFAC 周五宣布对三名新疆地方官员实施全球 Magnitsky 人权制裁，冻结其在美资产并禁止入境。这是拜登政府离任前最后一批中国相关人权制裁，欧盟与英国预计跟进。
+        </p>
+        <div class="dispatch-section">
+          <div class="dispatch-section-label">为什么重要</div>
+          <p class="dispatch-significance">
+            首次直接点名地市级官员，标志制裁机制下沉。对中文圈讨论"个人责任"和"跨国问责"是关键节点。
+          </p>
+        </div>
+        <div class="dispatch-section">
+          <div class="dispatch-section-label">推文钩子</div>
+          <p class="dispatch-hook">
+            "制裁名单第一次精确到了地级市 — 这意味着什么？"
+          </p>
+        </div>
+        <div class="dispatch-footer">
+          <span class="dispatch-source"><span class="dispatch-source-dot"></span>REUTERS · WSJ · RFA</span>
+          <a href="#" class="dispatch-link">原文 →</a>
+        </div>
+      </article>
+
+      <article class="dispatch reveal" data-topic="us">
+        <div class="dispatch-header">
+          <div class="dispatch-tags">
+            <span class="ticker-tag tag-us">美国政坛</span>
+          </div>
+          <span class="dispatch-time">11 MIN AGO</span>
+        </div>
+        <h3 class="dispatch-title">最高法院 6-3 裁定扩大总统在国家安全事务上的行政豁免</h3>
+        <p class="dispatch-summary">
+          SCOTUS 在 Trump v. United States 续案中以 6-3 支持总统在国家安全决策上拥有"推定豁免权"，自由派三位大法官联名异议。判决对未来政府权力边界影响深远。
+        </p>
+        <div class="dispatch-section">
+          <div class="dispatch-section-label">为什么重要</div>
+          <p class="dispatch-significance">
+            重塑了"行政权 vs 司法审查"的宪法平衡。未来任何总统的对外行动几乎都将享有事实豁免，对中国议题的对抗性政策影响最大。
+          </p>
+        </div>
+        <div class="dispatch-section">
+          <div class="dispatch-section-label">推文钩子</div>
+          <p class="dispatch-hook">
+            "这不只是给特朗普的礼物 — 是给所有未来美国总统的。"
+          </p>
+        </div>
+        <div class="dispatch-footer">
+          <span class="dispatch-source"><span class="dispatch-source-dot"></span>NYT · POLITICO · SCOTUSBLOG</span>
+          <a href="#" class="dispatch-link">原文 →</a>
+        </div>
+      </article>
+
+      <article class="dispatch reveal" data-topic="tech econ">
+        <div class="dispatch-header">
+          <div class="dispatch-tags">
+            <span class="ticker-tag tag-tech">科技</span>
+            <span class="ticker-tag tag-econ">经济</span>
+          </div>
+          <span class="dispatch-time">23 MIN AGO</span>
+        </div>
+        <h3 class="dispatch-title">NVIDIA H300 发布并明确禁运中国大陆，股价盘后跌 4.2%</h3>
+        <p class="dispatch-summary">
+          NVIDIA 在 GTC 大会发布 H300 数据中心 GPU，性能较 H100 提升 3 倍。但同时声明因美国出口管制升级，H300 全系（含降配版）均不向中国大陆出口。
+        </p>
+        <div class="dispatch-section">
+          <div class="dispatch-section-label">为什么重要</div>
+          <p class="dispatch-significance">
+            "降配特供"路线被堵死，意味着中国 AI 公司失去最后一条合法获取顶级算力的通道。华为昇腾的市场窗口骤然打开。
+          </p>
+        </div>
+        <div class="dispatch-section">
+          <div class="dispatch-section-label">推文钩子</div>
+          <p class="dispatch-hook">
+            "NVIDIA 关上的不是一扇门，是给华为递的一个机会。"
+          </p>
+        </div>
+        <div class="dispatch-footer">
+          <span class="dispatch-source"><span class="dispatch-source-dot"></span>BLOOMBERG · FT · NIKKEI</span>
+          <a href="#" class="dispatch-link">原文 →</a>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="demo-meta">
+      <span><strong>每小时</strong> 8 条上限 · 全部经过<strong>跨源去重 + 重要性打分</strong></span>
+      <span>↓ 滑动至下方查看完整工作流</span>
+    </div>
+  </div>
+</section>
+
+<!-- Section 02: Why -->
+<section class="section why">
+  <div class="container">
+    <div class="section-label reveal">02 / THE PROBLEM</div>
+    <h2 class="pull-quote reveal">
+      现代独立创作者最大的对手，不是平台 — 是<em>噪声</em>。
+    </h2>
+    <div class="why-grid">
+      <div class="why-item reveal">
+        <div class="why-num">▸ I.</div>
+        <h3 class="why-title">信源破碎</h3>
+        <p class="why-body">
+          重要新闻分散在 30+ 国际媒体、6 种语言、付费墙后面、Twitter/X 大 V 的随手转发里。一个人不可能 24 小时全网监控。
+        </p>
+      </div>
+      <div class="why-item reveal">
+        <div class="why-num">▸ II.</div>
+        <h3 class="why-title">时差错位</h3>
+        <p class="why-body">
+          等你在中文圈看到讨论时，新闻浪潮已经过去 6-12 小时。后发者只能蹭流量，不能定义议题。
+        </p>
+      </div>
+      <div class="why-item reveal">
+        <div class="why-num">▸ III.</div>
+        <h3 class="why-title">缺乏视角</h3>
+        <p class="why-body">
+          标题告诉你"发生了什么"。但创作者真正需要的是"为什么这条值得说"和"我能用什么角度切入"。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 03: How it works -->
+<section class="section" id="how">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="section-label">03 / HOW IT WORKS</div>
+      <h2>四步，从全球噪声到<em>你的下一条推文</em>。</h2>
+      <p>没有黑魔法。整套系统建在你能审核的开放标准之上：RSS、Telegram Bot API、Anthropic API。</p>
+    </div>
+
+    <div class="how-grid">
+      <div class="how-step reveal">
+        <div class="how-num">STEP 01</div>
+        <div class="how-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/>
+          </svg>
+        </div>
+        <h3 class="how-title">SCAN</h3>
+        <p class="how-body">
+          每小时整点扫描 34 个国际信源 — 路透、BBC、NYT、WSJ、FT、自由亚洲、DW、RFI、Nikkei，及针对话题的 Google News 实时搜索。
+        </p>
+        <div class="how-detail">8 LANGS · 每次 600+ 条原始数据</div>
+      </div>
+      <div class="how-step reveal">
+        <div class="how-num">STEP 02</div>
+        <div class="how-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M3 6h18M6 12h12M9 18h6"/>
+          </svg>
+        </div>
+        <h3 class="how-title">FILTER</h3>
+        <p class="how-body">
+          按你订阅的话题（中共/人权、美国政坛、科技、经济、全球突发）筛选；中英文双语关键词匹配；跨源去重，多源互证的事件优先。
+        </p>
+        <div class="how-detail">600 条 → 8 条 SIGNAL</div>
+      </div>
+      <div class="how-step reveal">
+        <div class="how-num">STEP 03</div>
+        <div class="how-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M4 4h16v12H4z M8 8h8M8 12h5"/>
+            <path d="M8 20l4-4 4 4"/>
+          </svg>
+        </div>
+        <h3 class="how-title">BRIEF</h3>
+        <p class="how-body">
+          Claude 读完原文后生成中文摘要（who/what/when/where）、一句"为什么重要"、以及一句可改写成推文的钩子句。
+        </p>
+        <div class="how-detail">POWERED BY ANTHROPIC CLAUDE</div>
+      </div>
+      <div class="how-step reveal">
+        <div class="how-num">STEP 04</div>
+        <div class="how-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M3 12l18-9-9 18-2-7-7-2z"/>
+          </svg>
+        </div>
+        <h3 class="how-title">DELIVER</h3>
+        <p class="how-body">
+          推送到 Telegram、Discord、飞书 / Lark、X DM，或自定义 Webhook。所有调度同步到你的网页 dashboard，可搜索、可归档。
+        </p>
+        <div class="how-detail">5 个目的地 · 即时推送</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 04: Topics -->
+<section class="section" id="topics">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="section-label">04 / WHAT WE TRACK</div>
+      <h2>五大议题轨道，覆盖<em>你真正在写的东西</em>。</h2>
+      <p>每条轨道都有专门优化的信源组合和关键词词典。Creator 套餐及以上支持自定义无限话题。</p>
+    </div>
+
+    <div class="topics-grid">
+      <div class="topic-card reveal" style="--accent: #ef4444;">
+        <div class="topic-flag">🇨🇳</div>
+        <h3 class="topic-name">中共 / 人权</h3>
+        <div class="topic-en">CCP · HUMAN RIGHTS</div>
+        <div class="topic-sources">
+          <span class="topic-source">RFA</span>
+          <span class="topic-source">DW中文</span>
+          <span class="topic-source">CDT</span>
+          <span class="topic-source">NIKKEI</span>
+          <span class="topic-source">DIPLOMAT</span>
+        </div>
+        <p class="topic-desc">新疆、西藏、香港、维权人士、跨国镇压、白纸运动、习近平政局、党媒口径变化。</p>
+      </div>
+
+      <div class="topic-card reveal" style="--accent: #60a5fa;">
+        <div class="topic-flag">🇺🇸</div>
+        <h3 class="topic-name">美国政坛</h3>
+        <div class="topic-en">US POLITICS</div>
+        <div class="topic-sources">
+          <span class="topic-source">POLITICO</span>
+          <span class="topic-source">AXIOS</span>
+          <span class="topic-source">NYT</span>
+          <span class="topic-source">WSJ</span>
+          <span class="topic-source">THE HILL</span>
+        </div>
+        <p class="topic-desc">白宫动态、国会立法、最高法院、FBI/DOJ 调查、对华政策、大选追踪。</p>
+      </div>
+
+      <div class="topic-card reveal" style="--accent: #c084fc;">
+        <div class="topic-flag">🤖</div>
+        <h3 class="topic-name">科技</h3>
+        <div class="topic-en">TECH · AI · CHIPS</div>
+        <div class="topic-sources">
+          <span class="topic-source">TC</span>
+          <span class="topic-source">VERGE</span>
+          <span class="topic-source">ARS</span>
+          <span class="topic-source">BLOOMBERG</span>
+          <span class="topic-source">FT</span>
+        </div>
+        <p class="topic-desc">OpenAI / Anthropic / Google DeepMind、半导体出口管制、台积电、马斯克帝国、监管动态。</p>
+      </div>
+
+      <div class="topic-card reveal" style="--accent: #4ade80;">
+        <div class="topic-flag">💰</div>
+        <h3 class="topic-name">经济</h3>
+        <div class="topic-en">MARKETS · MACRO</div>
+        <div class="topic-sources">
+          <span class="topic-source">WSJ</span>
+          <span class="topic-source">CNBC</span>
+          <span class="topic-source">FT</span>
+          <span class="topic-source">BLOOMBERG</span>
+        </div>
+        <p class="topic-desc">联储议息、通胀数据、关税博弈、就业报告、汇率、中美贸易、A 股 / 港股 / 美股关键事件。</p>
+      </div>
+
+      <div class="topic-card reveal" style="--accent: #f87171;">
+        <div class="topic-flag">⚡</div>
+        <h3 class="topic-name">全球突发</h3>
+        <div class="topic-en">GLOBAL · BREAKING</div>
+        <div class="topic-sources">
+          <span class="topic-source">REUTERS</span>
+          <span class="topic-source">BBC</span>
+          <span class="topic-source">AP</span>
+          <span class="topic-source">AL JAZEERA</span>
+          <span class="topic-source">GUARDIAN</span>
+        </div>
+        <p class="topic-desc">俄乌战争、以巴冲突、伊朗、朝鲜、台海、政变、地震 / 灾害、重大空袭与停火节点。</p>
+      </div>
+
+      <div class="topic-card special reveal">
+        <div class="topic-flag">＋</div>
+        <h3 class="topic-name">自定义话题</h3>
+        <div class="topic-en">YOUR OWN BEAT</div>
+        <div class="topic-sources">
+          <span class="topic-source">CREATOR+</span>
+        </div>
+        <p class="topic-desc">订阅 Creator 及以上，可定义任意关键词组合（"印度大选 + 莫迪 + Adani"、"加密货币监管 + SEC"、"Tesla + Elon"等）。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 05: Pricing -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-head reveal" style="text-align: center; margin-left: auto; margin-right: auto;">
+      <div class="section-label" style="justify-content: center;">05 / PRICING</div>
+      <h2>定价<em>朴素直接</em>，没有花招。</h2>
+      <p style="margin-left: auto; margin-right: auto;">所有套餐含 7 天免费试用，无需信用卡。可随时取消。年付节省两个月。</p>
+      <div class="pricing-toggle reveal" style="margin-top: 2.5rem;">
+        <button class="toggle-btn" data-billing="monthly">Monthly</button>
+        <button class="toggle-btn active" data-billing="annual">Annual <span class="toggle-save">–20%</span></button>
+      </div>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- STARTER -->
+      <div class="tier reveal">
+        <div class="tier-name">Starter</div>
+        <div class="tier-tagline">从全球噪声中筛出第一缕信号</div>
+        <div class="tier-price"><span class="currency">$</span><span data-price="starter-annual" data-monthly="19" data-annual="15">15</span><span class="period">/MO</span></div>
+        <div class="tier-price-billed" data-billed-annual="$180 BILLED ANNUALLY" data-billed-monthly="BILLED MONTHLY">$180 BILLED ANNUALLY</div>
+        <a href="#" class="btn btn-ghost tier-cta">开始试用 <span class="btn-arrow">→</span></a>
+        <ul class="tier-features">
+          <li><strong>1 个</strong>预设话题轨道</li>
+          <li><strong>每天</strong> 1 次精选摘要</li>
+          <li>Telegram 推送</li>
+          <li>7 天调度归档</li>
+          <li>Web dashboard 访问</li>
+        </ul>
+      </div>
+
+      <!-- CREATOR (popular) -->
+      <div class="tier popular reveal">
+        <div class="tier-name">Creator</div>
+        <div class="tier-tagline">独立内容创作者的工作主台</div>
+        <div class="tier-price"><span class="currency">$</span><span data-price="creator-annual" data-monthly="49" data-annual="39">39</span><span class="period">/MO</span></div>
+        <div class="tier-price-billed" data-billed-annual="$468 BILLED ANNUALLY" data-billed-monthly="BILLED MONTHLY">$468 BILLED ANNUALLY</div>
+        <a href="#" class="btn btn-primary tier-cta">开始试用 <span class="btn-arrow">→</span></a>
+        <ul class="tier-features">
+          <li><strong>全部 5 个</strong>预设话题 + <strong>3 个</strong>自定义话题</li>
+          <li><strong>每小时</strong>实时摘要</li>
+          <li>Telegram + Discord + 飞书</li>
+          <li>30 天归档 + 全文搜索</li>
+          <li>自定义关键词词典</li>
+          <li>推文钩子改写器</li>
+          <li><strong>优先信源</strong>抓取队列</li>
+        </ul>
+      </div>
+
+      <!-- EDITORIAL -->
+      <div class="tier reveal">
+        <div class="tier-name">Editorial</div>
+        <div class="tier-tagline">媒体团队 · 多人协作 · 高级洞察</div>
+        <div class="tier-price"><span class="currency">$</span><span data-price="editorial-annual" data-monthly="149" data-annual="119">119</span><span class="period">/MO</span></div>
+        <div class="tier-price-billed" data-billed-annual="$1,428 BILLED ANNUALLY" data-billed-monthly="BILLED MONTHLY">$1,428 BILLED ANNUALLY</div>
+        <a href="#" class="btn btn-ghost tier-cta">联系销售 <span class="btn-arrow">→</span></a>
+        <ul class="tier-features">
+          <li><strong>无限</strong>话题 + <strong>5 个</strong>团队席位</li>
+          <li><strong>每 30 分钟</strong>实时摘要</li>
+          <li>所有交付渠道 + Webhook + API</li>
+          <li>无限归档 + 高级分析</li>
+          <li>每日 / 每周编辑摘要</li>
+          <li>自定义 AI 摘要语气</li>
+          <li><strong>专属客户经理</strong></li>
+          <li>SLA 保障</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonial -->
+<section class="testimonial">
+  <div class="testimonial-inner">
+    <p class="testimonial-quote reveal">
+      "把我每天早上 90 分钟的信息搜集压缩到了 10 分钟。<br>更重要的是，<em>我不再错过那些定义议题的 24 小时窗口</em>。"
+    </p>
+    <div class="testimonial-attr reveal">
+      <strong>L. — INDEPENDENT CHINA WATCHER</strong> · 84,000 FOLLOWERS · CREATOR USER
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head reveal" style="margin-bottom: 3rem;">
+      <div class="section-label">06 / FAQ</div>
+      <h2>需要先弄清的几件事。</h2>
+    </div>
+
+    <div class="faq-list">
+      <details class="faq-item reveal">
+        <summary>这和我自己刷 Twitter / RSS 阅读器有什么区别？</summary>
+        <div class="faq-answer">
+          根本区别在<strong>过滤层</strong>和<strong>编辑层</strong>。RSS 阅读器把所有原文堆给你，平均一天产生 600+ 条 — 你需要自己读完、判断、翻译、找角度。MERIDIAN 把这一切前置：跨源去重、按重要性打分、Claude 写中文摘要、给你立场视角和推文钩子。你拿到的不是信息，是<strong>可立即工作的素材</strong>。
+        </div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>AI 摘要会不会有偏见 / 翻译错误 / 幻觉？</summary>
+        <div class="faq-answer">
+          每条 dispatch 都附带原文链接，便于你二次核实。Claude 在事实摘要任务上准确率非常高，但我们仍建议把关键事实回查原文 — 这也是为什么我们把链接放在每张卡片底部。"为什么重要"和"推文钩子"是带视角的输出，不是中立陈述，请按你的判断采用。
+        </div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>支持哪些推送渠道？能推到微信吗？</summary>
+        <div class="faq-answer">
+          支持 Telegram、Discord、飞书 / Lark、X DM 和自定义 Webhook（任意你能接收 HTTP POST 的服务）。微信受限于其封闭的开放接口，<strong>暂不支持原生推送</strong>，但可以通过企业微信机器人或 Webhook 中转实现。
+        </div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>我能选择不收某些话题吗？比如只要中共相关？</summary>
+        <div class="faq-answer">
+          可以。Starter 套餐就是按"单话题轨道"订阅；Creator 及以上支持开关任意话题，并设置自定义关键词组合。每条调度也支持你在收到后用一键反馈"不要再发类似的"，系统会学习你的偏好。
+        </div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>数据隐私？我的关键词、阅读历史会被卖给谁吗？</summary>
+        <div class="faq-answer">
+          不会。我们不向第三方出售或共享用户数据，也不向广告商提供分析。你的话题订阅、关键词词典、阅读记录仅用于产品本身。基础设施在 AWS（us-west-2 / Singapore），数据传输全程 TLS 加密。详细政策见 Privacy Policy。
+        </div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>如果我已经在用开源版本（GitHub Actions + 自托管），还需要付费版吗？</summary>
+        <div class="faq-answer">
+          完全坦诚：如果你是技术型创作者、单人使用、信源不需要扩展、不介意每周维护一次，开源版完全够用。MERIDIAN 付费版的价值在于<strong>不用维护、信源持续策展、专业打分模型、多渠道交付、Web dashboard、归档搜索、团队协作</strong>。本质是把你的时间从工程上换回创作上。
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="final">
+  <div class="final-inner">
+    <div class="final-meta">
+      <span class="status-dot"></span>NEXT DISPATCH IN <span id="countdown">47:23</span>
+    </div>
+    <h2>你的下一条调度，<br><em>正在被策展。</em></h2>
+    <p>
+      给自己 7 天，看看在不刷 Twitter 的早上你能写出什么。
+    </p>
+    <div class="final-cta">
+      <a href="#" class="btn btn-primary btn-lg">开始 7 天免费试用 <span class="btn-arrow">→</span></a>
+      <a href="#" class="nav-signin">已有账号 → 登录</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo">MERIDIAN<span class="logo-dot"></span></div>
+      <p>为独立中文创作者打造的全球新闻情报系统。Made for the independent voice.</p>
+      <div class="footer-status">
+        <span class="status-dot"></span>ALL SYSTEMS OPERATIONAL · v2.4.1
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <ul>
+        <li><a href="#">Features</a></li>
+        <li><a href="#">Pricing</a></li>
+        <li><a href="#">Changelog</a></li>
+        <li><a href="#">Roadmap</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Editorial Blog</a></li>
+        <li><a href="#">API Reference</a></li>
+        <li><a href="#">Status</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 MERIDIAN INTELLIGENCE CO. · MADE FOR THE INDEPENDENT VOICE</span>
+    <span>NEW YORK · TAIPEI · TOKYO · BERLIN</span>
+  </div>
+</footer>
+
+<script>
+// ===========================================================================
+// Topic switcher
+// ===========================================================================
+const chips = document.querySelectorAll('.topic-chip');
+const dispatches = document.querySelectorAll('.dispatch');
+
+chips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    chips.forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    const t = chip.dataset.topic;
+    dispatches.forEach(d => {
+      const topics = d.dataset.topic.split(' ');
+      if (t === 'all' || topics.includes(t)) {
+        d.style.display = '';
+        d.style.opacity = '0';
+        requestAnimationFrame(() => {
+          d.style.transition = 'opacity 400ms ease';
+          d.style.opacity = '1';
+        });
+      } else {
+        d.style.display = 'none';
+      }
+    });
+  });
+});
+
+// ===========================================================================
+// Pricing toggle (monthly / annual)
+// ===========================================================================
+const billingBtns = document.querySelectorAll('.toggle-btn');
+billingBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    billingBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.dataset.billing; // 'monthly' or 'annual'
+    document.querySelectorAll('[data-price]').forEach(el => {
+      el.textContent = mode === 'annual' ? el.dataset.annual : el.dataset.monthly;
+    });
+    document.querySelectorAll('[data-billed-annual]').forEach(el => {
+      el.textContent = mode === 'annual' ? el.dataset.billedAnnual : el.dataset.billedMonthly;
+    });
+  });
+});
+
+// ===========================================================================
+// UTC clock
+// ===========================================================================
+function updateClock() {
+  const now = new Date();
+  const utc = now.toISOString().substring(11, 19);
+  const el = document.getElementById('utc-time');
+  if (el) el.textContent = utc;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ===========================================================================
+// Countdown to next hour
+// ===========================================================================
+function updateCountdown() {
+  const now = new Date();
+  const next = new Date(now);
+  next.setHours(now.getHours() + 1, 0, 0, 0);
+  const diff = next - now;
+  const mins = Math.floor(diff / 60000);
+  const secs = Math.floor((diff % 60000) / 1000);
+  const el = document.getElementById('countdown');
+  if (el) el.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ===========================================================================
+// Last dispatch (random for demo realism)
+// ===========================================================================
+const minutes = ['3 MIN AGO', '7 MIN AGO', '12 MIN AGO', '18 MIN AGO', '24 MIN AGO'];
+const lastEl = document.getElementById('last-dispatch');
+if (lastEl) lastEl.textContent = minutes[Math.floor(Math.random() * minutes.length)];
+
+// ===========================================================================
+// Reveal on scroll
+// ===========================================================================
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('in');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Stagger nested reveals (cards in a grid)
+['.dispatch-grid', '.why-grid', '.how-grid', '.topics-grid', '.pricing-grid'].forEach(sel => {
+  const grid = document.querySelector(sel);
+  if (!grid) return;
+  Array.from(grid.children).forEach((child, i) => {
+    if (child.classList.contains('reveal')) {
+      child.style.transitionDelay = `${i * 80}ms`;
+    }
+  });
+});
+</script>
+</body>
+</html>

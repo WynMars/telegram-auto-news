@@ -1,0 +1,164 @@
+# 关键词配置 — 中英文并列
+# 文章标题或摘要中匹配到任一关键词即归入该话题
+# 英文走 word-boundary 匹配，CJK 字符走子串匹配
+
+china_human_rights:
+  # English
+  - Xinjiang
+  - Uyghur
+  - Uighur
+  - Tibet
+  - Tibetan
+  - Hong Kong
+  - dissident
+  - human rights China
+  - transnational repression
+  - censorship China
+  - Falun Gong
+  - Xi Jinping
+  - white paper protest
+  - CCP
+  - Chinese Communist Party
+  - political prisoner
+  # 中文
+  - 新疆
+  - 维吾尔
+  - 西藏
+  - 香港
+  - 维权
+  - 中共
+  - 习近平
+  - 异见
+  - 良心犯
+  - 政治犯
+  - 跨国镇压
+  - 言论自由
+  - 国安法
+  - 法轮功
+  - 上访
+  - 党媒
+  - 白纸运动
+
+us_politics:
+  - Trump
+  - Biden
+  - Harris
+  - Vance
+  - White House
+  - Congress
+  - Senate
+  - House of Representatives
+  - SCOTUS
+  - Supreme Court
+  - midterm
+  - impeachment
+  - DOJ
+  - FBI
+  - indictment
+  - Pentagon
+  - State Department
+  - Republican
+  - Democrat
+  - 特朗普
+  - 川普
+  - 拜登
+  - 哈里斯
+  - 万斯
+  - 国会
+  - 参议院
+  - 众议院
+  - 最高法院
+  - 白宫
+  - 弹劾
+  - 美国大选
+  - 共和党
+  - 民主党
+
+tech:
+  - OpenAI
+  - Anthropic
+  - Google
+  - Apple
+  - Microsoft
+  - Meta
+  - NVIDIA
+  - TSMC
+  - ASML
+  - artificial intelligence
+  - semiconductor
+  - chip ban
+  - antitrust
+  - Tesla
+  - SpaceX
+  - Musk
+  - GPT
+  - Claude
+  - Gemini
+  - 人工智能
+  - 芯片
+  - 半导体
+  - 台积电
+  - 反垄断
+  - 马斯克
+  - 算力
+  - 大模型
+
+economy:
+  - Federal Reserve
+  - Fed
+  - FOMC
+  - Powell
+  - inflation
+  - recession
+  - tariff
+  - GDP
+  - interest rate
+  - rate cut
+  - rate hike
+  - jobs report
+  - unemployment
+  - 美联储
+  - 通胀
+  - 衰退
+  - 关税
+  - 加息
+  - 降息
+  - 利率
+  - 失业率
+  - 就业
+
+global_breaking:
+  - war
+  - invasion
+  - coup
+  - earthquake
+  - tsunami
+  - mass shooting
+  - assassination
+  - missile
+  - airstrike
+  - ceasefire
+  - hostage
+  - Ukraine
+  - Russia
+  - Israel
+  - Gaza
+  - Iran
+  - North Korea
+  - Taiwan
+  - 战争
+  - 入侵
+  - 政变
+  - 地震
+  - 海啸
+  - 台海
+  - 朝鲜
+  - 伊朗
+  - 以色列
+  - 加沙
+  - 俄罗斯
+  - 乌克兰
+  - 导弹
+  - 空袭
+  - 停火
+  - 人质
